@@ -12,11 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 public class LogPanel extends Table {
     public LogPanel(Skin skin){
         super(skin);
+        pad(16);
     }
 
     public void log(String log){
         row();
         TextField textField = new TextField(log, super.getSkin());
-        add(textField).width(300);
+        add(textField).width(600);
     }
 }

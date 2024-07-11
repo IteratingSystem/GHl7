@@ -53,11 +53,10 @@ public class Instrument implements BaseInstrument {
             context.setLowerLayerProtocol(mllp);
 
             service = context.newServer(PORT,USE_SSL);
-            service.registerApplication(new ReceivingResult());
-            service.registerApplication(new ReceivingPlace());
+            service.registerApplication(new RegisterApplication());
             service.startAndWait();
 
-            Log.log("Service started successfully!");
+            Log.log("Service started successfully!Port:"+PORT);
         } catch (InterruptedException e) {
             Log.log("Service started failed!");
             e.printStackTrace();
