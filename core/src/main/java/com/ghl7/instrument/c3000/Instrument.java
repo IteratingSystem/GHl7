@@ -5,6 +5,7 @@ import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
+import com.ghl7.Log;
 import com.ghl7.dao.ConnectionFactory;
 import com.ghl7.dao.ConnectionType;
 import com.ghl7.dao.SQLMapper;
@@ -32,8 +33,8 @@ public class Instrument implements BaseInstrument {
     @Override
     public void start() {
 
-        Connection connection = ConnectionFactory.getConnection(ConnectionType.SHE_KANG);
-        mapper = new SQLMapper(connection);
+//        Connection connection = ConnectionFactory.getConnection(ConnectionType.SHE_KANG);
+//        mapper = new SQLMapper(connection);
 
         context = new DefaultHapiContext();
         try {
@@ -56,9 +57,9 @@ public class Instrument implements BaseInstrument {
             service.registerApplication(new ReceivingPlace());
             service.startAndWait();
 
-            System.out.println("服务启动成功！");
+            Log.log("Service started successfully!");
         } catch (InterruptedException e) {
-            System.out.println("服务启动失败！");
+            Log.log("Service started failed!");
             e.printStackTrace();
         }
 
