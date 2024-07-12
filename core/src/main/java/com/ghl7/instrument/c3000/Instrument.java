@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @Description 接口
  **/
 public class Instrument implements BaseInstrument {
-    private final static String MID = "C3000";
+    public final static String MID = "C3000";
     private static final int PORT = 5001;
     public static final boolean USE_SSL = false;
 

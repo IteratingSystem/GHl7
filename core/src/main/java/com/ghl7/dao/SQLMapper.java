@@ -1,5 +1,7 @@
 package com.ghl7.dao;
 
+import com.ghl7.pojo.User;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,6 +39,11 @@ public class SQLMapper {
         return statement;
     }
 
+    public User getUser(String barcode,String mid){
+        String sql = "";
+        User user = new User();
+        return user;
+    }
     public ResultSet query(String sql) {
         ResultSet resultSet = null;
         try {
