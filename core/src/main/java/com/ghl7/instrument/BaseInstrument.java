@@ -17,4 +17,5 @@ public abstract class BaseInstrument {
     }
 
     public abstract void start();
+    public abstract void dispose();
 }

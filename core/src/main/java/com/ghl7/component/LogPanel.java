@@ -1,5 +1,6 @@
 package com.ghl7.component;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 import javax.xml.soap.Text;
@@ -13,12 +14,11 @@ public class LogPanel extends Table {
     private TextArea textArea;
     public LogPanel(Skin skin){
         super(skin);
-        pad(16);
-
         textArea = new TextArea("",skin);
         textArea.setPrefRows(150);
         textArea.setDisabled(true);
-        add(textArea).width(300);
+        textArea.setColor(30/255f,31/255f,34/255f,1);
+        add(textArea).width(500);
     }
 
     public void log(String log){

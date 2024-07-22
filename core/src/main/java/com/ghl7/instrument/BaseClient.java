@@ -72,13 +72,25 @@ public class BaseClient extends BaseInstrument{
             service.newConnection(activeConnection);
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort);
         } catch (InterruptedException e) {
-            Log.log("Client startup failed!"+e.getMessage());
+            System.out.println("Client startup failed!"+e.getMessage());
             e.printStackTrace();
         } catch (LLPException e) {
-            Log.log("Client startup failed!"+e.getMessage());
+            System.out.println("Client startup failed!"+e.getMessage());
             throw new RuntimeException(e);
         } catch (IOException e) {
-            Log.log("Client startup failed!Please confirm the connection address:"+targetHost+":"+targetPort);
+            System.out.println("Client startup failed!Please confirm the connection address:"+targetHost+":"+targetPort);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        service.stop();
+        try {
+            context.close();
+            System.out.println("Close context success!");
+        } catch (IOException e) {
+            System.out.println("Close context failed!");
             throw new RuntimeException(e);
         }
     }

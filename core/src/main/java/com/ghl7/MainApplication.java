@@ -20,6 +20,8 @@ public class MainApplication extends ApplicationAdapter {
     private Stage stage;
     public static LogPanel LOG_PANEL;
 
+    private  BaseClient h50Client;
+
     @Override
     public void create() {
         AssetManager assetManager = new AssetManager();
@@ -40,7 +42,7 @@ public class MainApplication extends ApplicationAdapter {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.setDebug(true);
+        table.setDebug(false);
 
         table.add(scrollPane).colspan(2);
         table.row();
@@ -58,7 +60,8 @@ public class MainApplication extends ApplicationAdapter {
     }
 
     private void runApp() {
-        BaseClient h50Client = new BaseClient("H50",5001,false,"10.0.0.11",5100,new H50Receiving("H50"));
+//        BaseClient h50Client = new BaseClient("H50",5001,false,"10.0.0.11",5100,new H50Receiving("H50"));
+        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
         h50Client.start();
     }
 
@@ -71,6 +74,7 @@ public class MainApplication extends ApplicationAdapter {
         ScreenUtils.clear(0.5f, 0.5f, 0.5f, 1);
         stage.act();
         stage.draw();
+
     }
 
     @Override
@@ -83,5 +87,6 @@ public class MainApplication extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        h50Client.dispose();
     }
 }

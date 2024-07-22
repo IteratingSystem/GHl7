@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import com.ghl7.Log;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +50,20 @@ public class BaseService extends BaseInstrument{
 
             Log.log("Service started successfully!Port:"+port);
         } catch (InterruptedException e) {
-            Log.log("Service started failed!");
+            System.out.println("Service started failed!");
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        service.stop();
+        try {
+            context.close();
+            System.out.println("Close context success!");
+        } catch (IOException e) {
+            System.out.println("Close context failed!");
+            throw new RuntimeException(e);
         }
     }
 }
