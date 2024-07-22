@@ -70,7 +70,7 @@ public class BaseClient extends BaseInstrument{
             socket.connect(socketAddress);
             ActiveConnection activeConnection = new ActiveConnection(parser, llp, socket);
             service.newConnection(activeConnection);
-            Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort);
+            Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
         } catch (InterruptedException e) {
             System.out.println("Client startup failed!"+e.getMessage());
             e.printStackTrace();
