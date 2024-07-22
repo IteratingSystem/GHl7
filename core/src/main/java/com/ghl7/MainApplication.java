@@ -34,7 +34,7 @@ public class MainApplication extends ApplicationAdapter {
         LOG_PANEL = new LogPanel(skin);
         ScrollPane scrollPane = new ScrollPane(LOG_PANEL);
         scrollPane.setScrollbarsVisible(true);
-        scrollPane.setFadeScrollBars(false);
+        scrollPane.setFadeScrollBars(true);
         scrollPane.setScrollingDisabled(false, false);
 
         TextButton clear = new TextButton("clear",skin);

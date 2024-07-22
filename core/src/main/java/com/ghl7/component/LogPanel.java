@@ -18,11 +18,11 @@ public class LogPanel extends Table {
         textArea.setPrefRows(150);
         textArea.setDisabled(true);
         textArea.setColor(30/255f,31/255f,34/255f,1);
-        add(textArea).width(500);
+        add(textArea).width(800);
     }
 
     public void log(String log){
-        textArea.appendText(log+"\n");
+        textArea.appendText(" "+log+"\n");
     }
 
     @Override
