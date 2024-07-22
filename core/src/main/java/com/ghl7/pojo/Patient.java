@@ -6,7 +6,7 @@ package com.ghl7.pojo;
  * @Description 用户
  **/
 
-public class User {
+public class Patient {
     public String id;
     public String sid;
     public String barcode;
@@ -21,4 +21,5 @@ public class User {
 
     public String dct;
     public String depart;
+    public String sName;
 }

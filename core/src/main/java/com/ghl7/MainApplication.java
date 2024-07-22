@@ -3,15 +3,13 @@ package com.ghl7;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ghl7.component.LogPanel;
+import com.ghl7.instrument.BaseClient;
 import com.ghl7.instrument.BaseInstrument;
-import com.ghl7.instrument.c3000.Instrument;
+import com.ghl7.receiving.H50Receiving;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -37,18 +35,31 @@ public class MainApplication extends ApplicationAdapter {
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(false, false);
 
+        TextButton clear = new TextButton("clear",skin);
+        TextButton save = new TextButton("save",skin);
+
         Table table = new Table();
         table.setFillParent(true);
         table.setDebug(true);
-        table.pad(32);
-        table.add(scrollPane);
+
+        table.add(scrollPane).colspan(2);
+        table.row();
+        table.add(clear);
+        table.add(save);
+
+
         stage = new Stage();
         stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
 
 
-        baseInstrument = new Instrument();
-        baseInstrument.start();
+
+        runApp();
+    }
+
+    private void runApp() {
+        BaseClient h50Client = new BaseClient("H50",5001,false,"10.0.0.11",5100,new H50Receiving("H50"));
+        h50Client.start();
     }
 
     @Override

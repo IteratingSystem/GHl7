@@ -1,8 +1,8 @@
 package com.ghl7.component;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+
+import javax.xml.soap.Text;
 
 /**
  * @Auther WenLong
@@ -10,14 +10,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
  * @Description
  **/
 public class LogPanel extends Table {
+    private TextArea textArea;
     public LogPanel(Skin skin){
         super(skin);
         pad(16);
+
+        textArea = new TextArea("",skin);
+        textArea.setPrefRows(150);
+        textArea.setDisabled(true);
+        add(textArea).width(300);
     }
 
     public void log(String log){
-        row();
-        TextField textField = new TextField(log, super.getSkin());
-        add(textField).width(600);
+        textArea.appendText(log+"\n");
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        int lines = textArea.getLines();
+        if (lines > 100000){
+            textArea.clear();
+        }
     }
 }
