@@ -42,9 +42,11 @@ public class H50Receiving implements ReceivingApplication {
     @Override
     public Message processMessage(Message message, Map map) throws ReceivingApplicationException, HL7Exception {
         if (message instanceof ACK){
+            Log.log("Is ack message!");
             try {
                 return message.generateACK();
             } catch (IOException e) {
+                Log.log("Failed to generate ACK message!"+e.getMessage());
                 throw new RuntimeException(e);
             }
         }

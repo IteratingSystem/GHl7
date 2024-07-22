@@ -1,16 +1,21 @@
 package com.ghl7.instrument;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.ActiveConnection;
 import ca.uhn.hl7v2.app.HL7Service;
+import ca.uhn.hl7v2.app.Initiator;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.llp.LowerLayerProtocol;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v231.message.ACK;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import com.ghl7.Log;
+import com.ghl7.message.MessageFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -60,7 +65,6 @@ public class BaseClient extends BaseInstrument{
 
             service = context.newServer(port,useSSL);
             service.registerApplication(receivingApplication);
-            service.startAndWait();
 
             Parser parser = new PipeParser();
             LowerLayerProtocol llp = new MinLowerLayerProtocol();
@@ -70,6 +74,10 @@ public class BaseClient extends BaseInstrument{
             socket.connect(socketAddress);
             ActiveConnection activeConnection = new ActiveConnection(parser, llp, socket);
             service.newConnection(activeConnection);
+            service.startAndWait();
+            ACK ack = (ACK)MessageFactory.getMessage(ACK.class.getSimpleName());
+            Initiator initiator = activeConnection.getInitiator();
+            initiator.sendAndReceive(ack);
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
         } catch (InterruptedException e) {
             System.out.println("Client startup failed!"+e.getMessage());
@@ -79,6 +87,9 @@ public class BaseClient extends BaseInstrument{
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.out.println("Client startup failed!Please confirm the connection address:"+targetHost+":"+targetPort);
+            throw new RuntimeException(e);
+        } catch (HL7Exception e) {
+            System.out.println("Failed to send ACK message!");
             throw new RuntimeException(e);
         }
     }
