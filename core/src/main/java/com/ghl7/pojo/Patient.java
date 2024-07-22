@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Patient {
     public String id = "";
-    public int sid = -1;
+    public String sid = "";
     public String barcode = "";
 
     public String status = "";

@@ -5,6 +5,9 @@ import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @Auther WenLong
@@ -21,8 +24,10 @@ public class SQLMapper {
     private static Statement getStatement() {
         if (connection == null){
             try {
+                Log.log("Connecting sql server...");
                 connection = DriverManager.getConnection(URL, USER_NAME, PASS_WORLD);
             } catch (SQLException e) {
+                Log.log("Failed to init connection!url:"+URL+",userName:"+USER_NAME);
                 throw new RuntimeException(e);
             }
         }
@@ -68,6 +73,8 @@ public class SQLMapper {
         return num;
     }
     public static void saveResult(Patient patient){
+
+        Log.log("Save patient begin:"+patient);
         String sql = "delete resulto \n" +
             "where 1=1\n" +
             "and res_id = '"+patient.id+"'\n" +
@@ -83,22 +90,30 @@ public class SQLMapper {
                 "('" + patient.mid + "'," + patient.sid + ",'" + result.itemName + "','" + result.result + "','" + result.resDate + "','" + patient.id + "',1,'" + patient.iName + "');";
             insert(sql);
         }
+        Log.log("Finished to save patient!");
     }
-    public static Patient getPatient(String barcode,String mid){
-        String sql = "select pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card\n" +
-            "from patients \n" +
-            "where 1=1\n" +
-            "and pat_bar_code = '"+barcode+"'\n" +
-            "and pat_mid = '"+mid+"'\n" +
-            "order by pat_date desc;";
+    public static Patient getPatient(String sid,String mid,String date){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime dateTime = LocalDateTime.parse(date,dateTimeFormatter);
+        LocalDate localDate = dateTime.toLocalDate();
+        String sDate = localDate.format(dateTimeFormatter);
+        LocalDate eLocalDate = localDate.plusDays(1);
+        String eDate = eLocalDate.format(dateTimeFormatter);
 
+        String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card " +
+            "from patients " +
+            "where 1=1 " +
+            "and pat_mid = '"+mid+"'" +
+            "and pat_date < '"+eDate+"'" +
+            "and pat_date >= '"+sDate+"'" +
+            "and pat_sid = "+sid+"; ";
         ResultSet query = query(sql);
         Patient patient = null;
         try {
             query.next();
             patient = new Patient();
             patient.id = query.getString("pat_id");
-            patient.sid = query.getInt("pat_sid");
+            patient.sid = query.getString("pat_sid");
             patient.barcode = query.getString("pat_bar_code");
             patient.name = query.getString("pat_name");
             patient.age = query.getString("pat_age");
@@ -113,7 +128,41 @@ public class SQLMapper {
             patient.identityCard = query.getString("pat_identity_card");
             Log.log("Get patient message:"+patient);
         } catch (SQLException e) {
-            Log.log("Failed to get patient message,barcode:"+barcode+",mid:"+mid+",error:"+e.getMessage());
+            Log.log("Failed to get patient message by sid,sid:"+sid+",mid:"+mid+",error:"+e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return patient;
+    }
+    public static Patient getPatient(String barcode,String mid){
+        String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card\n" +
+            "from patients \n" +
+            "where 1=1\n" +
+            "and pat_bar_code = '"+barcode+"'\n" +
+            "and pat_mid = '"+mid+"'\n" +
+            "order by pat_date desc;";
+
+        ResultSet query = query(sql);
+        Patient patient = null;
+        try {
+            query.next();
+            patient = new Patient();
+            patient.id = query.getString("pat_id");
+            patient.sid = query.getString("pat_sid");
+            patient.barcode = query.getString("pat_bar_code");
+            patient.name = query.getString("pat_name");
+            patient.age = query.getString("pat_age");
+            patient.sex = query.getString("pat_sex");
+            patient.sName = query.getString("pat_s_name");
+            patient.dct = query.getString("pat_doct");
+            patient.depart = query.getString("pat_d_name");
+            patient.status = query.getString("pat_performed_status");
+            patient.mid = query.getString("pat_mid");
+            patient.iName = query.getString("pat_i_name");
+            patient.phone = query.getString("pat_phonenum");
+            patient.identityCard = query.getString("pat_identity_card");
+            Log.log("Get patient message:"+patient);
+        } catch (SQLException e) {
+            Log.log("Failed to get patient message by barcode,barcode:"+barcode+",mid:"+mid+",error:"+e.getMessage());
             throw new RuntimeException(e);
         }
         return patient;

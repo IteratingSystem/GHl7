@@ -19,6 +19,9 @@ import com.ghl7.pojo.Result;
 import com.microsoft.sqlserver.jdbc.StringUtils;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,13 @@ public class H50Receiving implements ReceivingApplication {
 
     @Override
     public Message processMessage(Message message, Map map) throws ReceivingApplicationException, HL7Exception {
+        if (message instanceof ACK){
+            try {
+                return message.generateACK();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         //结果接收
         if (message instanceof ORU_R01){
             Log.log("Is result message!");
@@ -83,6 +93,7 @@ public class H50Receiving implements ReceivingApplication {
 
             List<String[]> obxs = MessageHelper.getSegment(oruR01, "OBX");
             List<Result> results = new ArrayList<>();
+            String resDate = "";
             for (String[] obx : obxs) {
                 //结果类型
                 String valueType = obx[2];
@@ -92,7 +103,7 @@ public class H50Receiving implements ReceivingApplication {
                 //获取项目及结果
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
-                String resDate = obx[14];
+                resDate = MessageHelper.getData(oruR01,"/.OBR-7");
                 resDate = MessageHelper.strToFormatStr(resDate);
                 Result result = new Result();
                 result.itemName = itemName;
@@ -103,21 +114,30 @@ public class H50Receiving implements ReceivingApplication {
 
 
             //以样本号接收结果
+            if (StringUtils.isEmpty(sid)){
 
-
-
-            //以条码号接收结果
-            Patient patient = SQLMapper.getPatient(barcode, mid);
-            if (patient == null || StringUtils.isEmpty(patient.id)) {
-                Log.log("This patient not in lis system;");
-                return ack;
+                Patient patient = SQLMapper.getPatient(sid,mid,resDate);
+                if (patient == null){
+                    return ack;
+                }
+                if ("7".equals(patient.status)){
+                    patient.sid = "999" + patient.sid;
+                }
+                SQLMapper.saveResult(patient);
+            }else{
+                //以条码号接收结果
+                Patient patient = SQLMapper.getPatient(barcode, mid);
+                if (patient == null || StringUtils.isEmpty(patient.id)) {
+                    Log.log("This patient not in lis system;");
+                    return ack;
+                }
+                if (!"6".equals(patient.status)){
+                    Log.log("This barcode is not layout,barcode:"+barcode+",status:"+patient.status);
+                    return ack;
+                }
+                patient.results = results;
+                SQLMapper.saveResult(patient);
             }
-            if (!"6".equals(patient.status)){
-                Log.log("This barcode is not layout,barcode:"+barcode+",status:"+patient.status);
-                return ack;
-            }
-            patient.results = results;
-            SQLMapper.saveResult(patient);
             return ack;
         } catch (HL7Exception e) {
             Log.log("Failed to parse OBR information, Unable to obtain barcode!");
