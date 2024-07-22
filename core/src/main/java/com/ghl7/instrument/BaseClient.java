@@ -22,9 +22,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.sql.Connection;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @Auther WenLong
@@ -75,10 +73,27 @@ public class BaseClient extends BaseInstrument{
             ActiveConnection activeConnection = new ActiveConnection(parser, llp, socket);
             service.newConnection(activeConnection);
             service.startAndWait();
+            Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
+
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
             ACK ack = (ACK)MessageFactory.getMessage(ACK.class.getSimpleName());
             Initiator initiator = activeConnection.getInitiator();
-            initiator.sendAndReceive(ack);
-            Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
+            Runnable sendAckTask = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        initiator.sendAndReceive(ack);
+                    } catch (HL7Exception e) {
+                        throw new RuntimeException(e);
+                    } catch (LLPException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            };
+            executorService.submit(sendAckTask);
+
         } catch (InterruptedException e) {
             System.out.println("Client startup failed!"+e.getMessage());
             e.printStackTrace();
@@ -87,9 +102,6 @@ public class BaseClient extends BaseInstrument{
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.out.println("Client startup failed!Please confirm the connection address:"+targetHost+":"+targetPort);
-            throw new RuntimeException(e);
-        } catch (HL7Exception e) {
-            System.out.println("Failed to send ACK message!");
             throw new RuntimeException(e);
         }
     }
