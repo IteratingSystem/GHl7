@@ -8,12 +8,12 @@ package com.ghl7.instrument;
 public abstract class BaseInstrument {
     public String mid;
     public int port;
-    public boolean useSSL;
+    public boolean useSTL;
 
-    public BaseInstrument(String mid,int port,boolean useSSL){
+    public BaseInstrument(String mid,int port,boolean useSTL){
         this.port = port;
         this.mid = mid;
-        this.useSSL = useSSL;
+        this.useSTL = useSTL;
     }
 
     public abstract void start();

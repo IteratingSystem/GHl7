@@ -44,7 +44,7 @@ public class BaseService extends BaseInstrument{
             mllp.setCharset("UTF-8");
             context.setLowerLayerProtocol(mllp);
 
-            service = context.newServer(port,useSSL);
+            service = context.newServer(port,useSTL);
             service.registerApplication(receivingApplication);
             service.startAndWait();
 
