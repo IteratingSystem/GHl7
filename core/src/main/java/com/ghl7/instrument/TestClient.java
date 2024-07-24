@@ -3,40 +3,40 @@ package com.ghl7.instrument;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.app.*;
-import ca.uhn.hl7v2.concurrent.Service;
+import ca.uhn.hl7v2.app.ActiveConnection;
+import ca.uhn.hl7v2.app.Connection;
+import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.llp.LLPException;
-import ca.uhn.hl7v2.llp.LowerLayerProtocol;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v231.message.ACK;
 import ca.uhn.hl7v2.parser.Parser;
-import ca.uhn.hl7v2.parser.PipeParser;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.util.StandardSocketFactory;
 import com.ghl7.Log;
-import com.ghl7.message.MessageFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
-import java.util.concurrent.*;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Auther WenLong
  * @Date 2024/7/22 10:07
  * @Description
  **/
-public class BaseClient extends BaseInstrument{
+public class TestClient extends BaseInstrument{
     private int targetPort;
     private String targetHost;
     private ReceivingApplication receivingApplication;
 
     private HapiContext context;
     private HL7Service service;
-    public BaseClient(String mid, int port, boolean useSTL,String targetHost,int targetPort,ReceivingApplication receivingApplication) {
+    public TestClient(String mid, int port, boolean useSTL, String targetHost, int targetPort, ReceivingApplication receivingApplication) {
         super(mid, port, useSTL);
         this.targetHost = targetHost;
         this.targetPort = targetPort;
@@ -61,31 +61,20 @@ public class BaseClient extends BaseInstrument{
             context.setSocketFactory(new StandardSocketFactory());
             context.setLowerLayerProtocol(mllp);
 
-            service = context.newServer(port,useSTL);
-            service.registerApplication(receivingApplication);
-            service.startAndWait();
 
-            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
-            Socket outboundSocket = context.getSocketFactory().createSocket();
-            Socket inboundSocket = context.getSocketFactory().createSocket();
-            ExecutorService executorService = context.getExecutorService();
-            SocketAddress outAddress = new InetSocketAddress(targetHost, targetPort);
-            SocketAddress inAddress = new InetSocketAddress("127.0.0.1", super.port);
-            outboundSocket.connect(outAddress, 5000); // 5000 是连接超时时间
-            inboundSocket.connect(inAddress, 5000); // 5000 是连接超时时间
-            ActiveConnection activeConnection = new ActiveConnection(parser, mllp,outboundSocket , inboundSocket,executorService);
-            service.newConnection(activeConnection);
-
-
-
+            Socket socket = new StandardSocketFactory().createSocket();
+            SocketAddress inAddress = new InetSocketAddress(targetHost,targetPort);
+            socket.connect(inAddress);
 
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
-
-        } catch (LLPException e) {
-            throw new RuntimeException(e);
+            InputStream inputStream = socket.getInputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                String message = new String(buffer, 0, bytesRead, StandardCharsets.UTF_8);
+                System.out.println("Received message: " + message);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
