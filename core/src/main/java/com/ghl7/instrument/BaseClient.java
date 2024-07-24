@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.*;
 
 /**
@@ -64,13 +65,13 @@ public class BaseClient extends BaseInstrument{
             service.registerApplication(receivingApplication);
             service.startAndWait();
 
-//            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
-//            LowerLayerProtocol llp = context.getLowerLayerProtocol(); // 使用 HapiContext 设置的 LowerLayerProtocol
-//            Socket socket = context.getSocketFactory().createSocket();
-//            SocketAddress socketAddress = new InetSocketAddress(targetHost, targetPort);
-//            socket.connect(socketAddress, 5000); // 5000 是连接超时时间
-//            ActiveConnection activeConnection = new ActiveConnection(parser, llp, socket);
-//            service.newConnection(activeConnection);
+            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
+            LowerLayerProtocol llp = context.getLowerLayerProtocol(); // 使用 HapiContext 设置的 LowerLayerProtocol
+            Socket socket = context.getSocketFactory().createSocket();
+            SocketAddress socketAddress = new InetSocketAddress(targetHost, targetPort);
+            socket.connect(socketAddress, 5000); // 5000 是连接超时时间
+            ActiveConnection activeConnection = new ActiveConnection(parser, llp, socket);
+            service.newConnection(activeConnection);
 
 //            Connection client = context.newClient(targetHost, targetPort, useSTL);
 //            ActiveConnection activeConnection = null;
@@ -78,15 +79,24 @@ public class BaseClient extends BaseInstrument{
 //            service.newConnection(activeConnection);
 
 
-            ActiveConnection activeConnection = new ActiveConnection();
+//            Parser ourPipeParser = new PipeParser();
+//            MinLowerLayerProtocol protocol = new MinLowerLayerProtocol();
+//            Socket outboundSocket = new Socket(targetHost, targetPort);
+//            Socket inboundSocket = new Socket("127.0.0.7", super.port);
+//            //configure a connection that is capable of sending and receiving messages through the two ports
+//            ActiveConnection activeConnection = new ActiveConnection(ourPipeParser, protocol, inboundSocket, outboundSocket);
+//            service.newConnection(activeConnection);
 
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
 
 
-        } catch (HL7Exception e) {
-            System.out.println("Client startup failed!"+e.getMessage());
-            throw new RuntimeException(e);
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        } catch (LLPException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

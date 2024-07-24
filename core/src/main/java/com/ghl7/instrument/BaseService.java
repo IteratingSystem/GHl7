@@ -18,12 +18,14 @@ import java.util.concurrent.TimeUnit;
  * @Description
  **/
 public class BaseService extends BaseInstrument{
-    private HapiContext context;
-    private HL7Service service;
+    public HapiContext context;
+    public HL7Service service;
     private ReceivingApplication receivingApplication;
     public BaseService(String mid, int port, boolean useSSL,ReceivingApplication receivingApplication) {
         super(mid, port, useSSL);
-        this.receivingApplication = receivingApplication;
+        if (receivingApplication != null){
+            this.receivingApplication = receivingApplication;
+        }
     }
 
     @Override
@@ -45,9 +47,12 @@ public class BaseService extends BaseInstrument{
             context.setLowerLayerProtocol(mllp);
 
             service = context.newServer(port,useSTL);
-            service.registerApplication(receivingApplication);
+            if (receivingApplication != null){
+                service.registerApplication(receivingApplication);
+            }
             service.startAndWait();
 
+            System.out.println("Service started successfully!Port:"+port);
             Log.log("Service started successfully!Port:"+port);
         } catch (InterruptedException e) {
             System.out.println("Service started failed!");

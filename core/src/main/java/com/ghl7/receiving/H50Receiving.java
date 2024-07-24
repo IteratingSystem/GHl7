@@ -41,26 +41,34 @@ public class H50Receiving implements ReceivingApplication {
 
     @Override
     public Message processMessage(Message message, Map map) throws ReceivingApplicationException, HL7Exception {
-        if (message instanceof ACK){
-            Log.log("Is ack message!");
-            try {
-                return message.generateACK();
-            } catch (IOException e) {
-                Log.log("Failed to generate ACK message!"+e.getMessage());
-                throw new RuntimeException(e);
-            }
-        }
-        //结果接收
-        if (message instanceof ORU_R01){
-            Log.log("Is result message!");
-            return saveResult((ORU_R01) message);
-        }
-        //双向查询
-        if (message instanceof ORM_O01){
-            Log.log("Is query message!");
+        try {
+            return message.generateACK();
+        } catch (IOException e) {
+            Log.log("Failed to generate ACK message!"+e.getMessage());
+            throw new RuntimeException(e);
         }
 
-        return null;
+//
+//        if (message instanceof ACK){
+//            Log.log("Is ack message!");
+//            try {
+//                return message.generateACK();
+//            } catch (IOException e) {
+//                Log.log("Failed to generate ACK message!"+e.getMessage());
+//                throw new RuntimeException(e);
+//            }
+//        }
+//        //结果接收
+//        if (message instanceof ORU_R01){
+//            Log.log("Is result message!");
+//            return saveResult((ORU_R01) message);
+//        }
+//        //双向查询
+//        if (message instanceof ORM_O01){
+//            Log.log("Is query message!");
+//        }
+//
+//        return null;
     }
 
     @Override
@@ -73,8 +81,6 @@ public class H50Receiving implements ReceivingApplication {
 
         try {
             ACK ack = (ACK)oruR01.generateACK();
-
-
 
             //读取id
             String originalId = MessageHelper.getData(oruR01,"/.OBR-3");
