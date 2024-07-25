@@ -18,10 +18,12 @@ import com.ghl7.Log;
 import com.ghl7.message.MessageFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -65,27 +67,38 @@ public class BaseClient extends BaseInstrument{
             service.registerApplication(receivingApplication);
             service.startAndWait();
 
-            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
-            Socket outboundSocket = context.getSocketFactory().createSocket();
-            Socket inboundSocket = context.getSocketFactory().createSocket();
-            ExecutorService executorService = context.getExecutorService();
-            SocketAddress outAddress = new InetSocketAddress(targetHost, targetPort);
-            SocketAddress inAddress = new InetSocketAddress("127.0.0.1", super.port);
-            outboundSocket.connect(outAddress, 5000); // 5000 是连接超时时间
-            inboundSocket.connect(inAddress, 5000); // 5000 是连接超时时间
-            ActiveConnection activeConnection = new ActiveConnection(parser, mllp,outboundSocket , inboundSocket,executorService);
+//            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
+//            Socket outboundSocket = context.getSocketFactory().createSocket();
+//            Socket inboundSocket = context.getSocketFactory().createSocket();
+//            ExecutorService executorService = context.getExecutorService();
+//            SocketAddress outAddress = new InetSocketAddress(targetHost, targetPort);
+//            SocketAddress inAddress = new InetSocketAddress("127.0.0.1", super.port);
+//            outboundSocket.connect(outAddress, 5000); // 5000 是连接超时时间
+//            inboundSocket.connect(inAddress, 5000); // 5000 是连接超时时间
+//            ActiveConnection activeConnection = new ActiveConnection(parser, mllp,outboundSocket , inboundSocket,executorService);
+//            service.newConnection(activeConnection);
+
+
+            ActiveConnection activeConnection = (ActiveConnection)context.newClient(targetHost,targetPort,useSTL);
+            Class<?> clazz = activeConnection.getClass();
+            Field field = clazz.getDeclaredField("receivers");
+            field.setAccessible(true);
+            List<Receiver> receivers = (List<Receiver>) field.get(activeConnection);
+            for (Receiver receiver : receivers) {
+                receiver.stopAndWait();
+            }
             service.newConnection(activeConnection);
-
-
 
 
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
 
-        } catch (LLPException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (HL7Exception e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
