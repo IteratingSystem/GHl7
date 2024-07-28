@@ -9,6 +9,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v231.message.ACK;
 import ca.uhn.hl7v2.model.v231.message.ORU_R01;
 import ca.uhn.hl7v2.model.v231.segment.MSH;
+import ca.uhn.hl7v2.model.v231.segment.PSH;
+import ca.uhn.hl7v2.parser.ModelClassFactory;
 import com.ghl7.message.MessageFactory;
 
 import java.io.IOException;
@@ -49,10 +51,56 @@ public class TestService {
                     }
                     System.out.println(0);
                     break;
-                case "send":
+                case "sendACK":
                     sendACK();
                     break;
+                case "sendPSH":
+                    sendPSH();
+                    break;
             }
+        }
+    }
+
+    private void sendPSH() {
+        List<Connection> remoteConnections = baseService.service.getRemoteConnections();
+        if (remoteConnections == null) {
+            return;
+        }
+        for (Connection connection : remoteConnections) {
+            try {
+                Initiator initiator = connection.getInitiator();
+
+                ModelClassFactory modelClassFactory = baseService.context.getModelClassFactory();
+                ACK ack = new ACK();
+                MSH msh = ack.getMSH();
+                msh.getFieldSeparator().setValue("|");
+                msh.getEncodingCharacters().setValue("^~\\&");
+                //厂家名称
+                msh.getSendingApplication().getNamespaceID().setValue("1");
+                msh.getSendingFacility().getNamespaceID().setValue("H50");
+                //lis信息
+                msh.getReceivingApplication().getNamespaceID().setValue("璟桥LIS");
+                msh.getReceivingFacility().getNamespaceID().setValue("LIS");
+                msh.getDateTimeOfMessage().getTimeOfAnEvent().setValue("");
+                msh.getMessageType().getMessageType().setValue("ACK");
+                msh.getMessageType().getTriggerEvent().setValue("A01");
+                msh.getMessageControlID().setValue("1");
+                msh.getProcessingID().getProcessingID().setValue("1");
+                msh.getVersionID().getVersionID().setValue("2.3.1");
+                //发送的结果类型
+                msh.getApplicationAcknowledgmentType().setValue("String");
+                PSH psh = new PSH(ack,modelClassFactory);
+                Message message = initiator.sendAndReceive(ack);
+            } catch (DataTypeException e) {
+                throw new RuntimeException(e);
+            } catch (HL7Exception e) {
+                throw new RuntimeException(e);
+            } catch (LLPException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 

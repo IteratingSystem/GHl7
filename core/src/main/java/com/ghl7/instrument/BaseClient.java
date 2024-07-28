@@ -10,12 +10,16 @@ import ca.uhn.hl7v2.llp.LowerLayerProtocol;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v231.message.ACK;
+import ca.uhn.hl7v2.model.v231.segment.PSH;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.protocol.ApplicationRouter;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
+import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
 import ca.uhn.hl7v2.util.StandardSocketFactory;
 import com.ghl7.Log;
 import com.ghl7.message.MessageFactory;
+import org.omg.Messaging.SYNC_WITH_TRANSPORT;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -25,6 +29,8 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.*;
+
+import static com.badlogic.gdx.utils.reflect.ClassReflection.getDeclaredField;
 
 /**
  * @Auther WenLong
@@ -46,7 +52,7 @@ public class BaseClient extends BaseInstrument{
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         context = new DefaultHapiContext();
 
         try {
@@ -65,40 +71,42 @@ public class BaseClient extends BaseInstrument{
 
             service = context.newServer(port,useSTL);
             service.registerApplication(receivingApplication);
+            service.setExceptionHandler(new ExceptionHandler());
             service.startAndWait();
 
-//            Parser parser = context.getGenericParser(); // 使用 HapiContext 提供的通用解析器
-//            Socket outboundSocket = context.getSocketFactory().createSocket();
-//            Socket inboundSocket = context.getSocketFactory().createSocket();
-//            ExecutorService executorService = context.getExecutorService();
-//            SocketAddress outAddress = new InetSocketAddress(targetHost, targetPort);
-//            SocketAddress inAddress = new InetSocketAddress("127.0.0.1", super.port);
-//            outboundSocket.connect(outAddress, 5000); // 5000 是连接超时时间
-//            inboundSocket.connect(inAddress, 5000); // 5000 是连接超时时间
-//            ActiveConnection activeConnection = new ActiveConnection(parser, mllp,outboundSocket , inboundSocket,executorService);
-//            service.newConnection(activeConnection);
+            Socket socket = context.getSocketFactory().createSocket();
+            InetSocketAddress inetSocketAddress = new InetSocketAddress(targetHost, targetPort);
+            socket.connect(inetSocketAddress,5000);
+            ActiveConnection connection = new ActiveConnection(
+                context.getGenericParser(),
+                context.getLowerLayerProtocol(),
+                socket,
+                context.getExecutorService());
+            System.out.println("Success for create a connection!");
+            service.newConnection(connection);
 
 
-            ActiveConnection activeConnection = (ActiveConnection)context.newClient(targetHost,targetPort,useSTL);
-            Class<?> clazz = activeConnection.getClass();
-            Field field = clazz.getDeclaredField("receivers");
-            field.setAccessible(true);
-            List<Receiver> receivers = (List<Receiver>) field.get(activeConnection);
-            for (Receiver receiver : receivers) {
-                receiver.stopAndWait();
-            }
-            service.newConnection(activeConnection);
-
+//            Class<?> serviceC = Class.forName("ca.uhn.hl7v2.app.HL7Service");
+//            Field applicationRouterF = serviceC.getDeclaredField("applicationRouter");
+//            applicationRouterF.setAccessible(true);
+//            ApplicationRouter applicationRouter = (ApplicationRouter)applicationRouterF.get(service);
+//
+//            Class<?> activeConnectionC = connection.getClass();
+//            Field responderF = activeConnectionC.getDeclaredField("responder");
+//            responderF.setAccessible(true);
+//            Class<?> responderC = responderF.get(connection).getClass();
+//            Field appsF = responderC.getDeclaredField("apps");
+//            appsF.setAccessible(true);
+//            appsF.set(connection.getResponder(),applicationRouter);
+//            service.getRemoteConnections().add(connection);
 
             Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        } catch (HL7Exception e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+        } catch (LLPException e) {
             throw new RuntimeException(e);
         }
     }

@@ -8,8 +8,10 @@ import ca.uhn.hl7v2.model.v231.message.ORM_O01;
 import ca.uhn.hl7v2.model.v231.message.ORU_R01;
 import ca.uhn.hl7v2.model.v231.segment.OBR;
 import ca.uhn.hl7v2.model.v231.segment.OBX;
+import ca.uhn.hl7v2.protocol.ApplicationRouter;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
+import ca.uhn.hl7v2.protocol.impl.AppRoutingDataImpl;
 import ca.uhn.hl7v2.util.Terser;
 import com.ghl7.Log;
 import com.ghl7.dao.SQLMapper;
@@ -75,6 +77,15 @@ public class H50Receiving implements ReceivingApplication {
     public boolean canProcess(Message message) {
         Log.log("Received message:");
         MessageHelper.logMessage(message);
+
+//        Terser t = new Terser(message);
+//        ApplicationRouter.AppRoutingData msgData = null;
+//        try {
+//            msgData = new AppRoutingDataImpl(t.get("/MSH-9-1"), t.get("/MSH-9-2"), t.get("/MSH-11-1"), t.get("/MSH-12"));
+//        } catch (HL7Exception e) {
+//            throw new RuntimeException(e);
+//        }
+
         return true;
     }
     private synchronized ACK saveResult(ORU_R01 oruR01) {

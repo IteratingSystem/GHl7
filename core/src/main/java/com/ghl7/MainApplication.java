@@ -59,12 +59,12 @@ public class MainApplication extends ApplicationAdapter {
 
     private void runApp() {
 //        BaseClient h50Client = new BaseClient("H50",5001,false,"10.0.0.11",5100,new H50Receiving("H50"));
-//        h50Client = new BaseClient("H50",5100,false,"10.0.0.9",5100,new H50Receiving("H50"));
+        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,new H50Receiving("H50"));
 //        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
-//        h50Client.start();
+        h50Client.start();
 
-        TestClient testClient = new TestClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
-        testClient.start();
+//        TestClient testClient = new TestClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
+//        testClient.start();
     }
 
     @Override
