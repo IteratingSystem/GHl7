@@ -23,12 +23,14 @@ public class Patient {
     public String phone = "";
 
     public String dct = "";
-    public String depart = "";
+    public String depart = "Medicine";
     public String sName = "";
     public String iName = "";
     public String identityCard = "";
 
     public List<Result> results = new ArrayList<>();
+    public String date = "20240101";
+    public String iDate = "20240101";
 
     @Override
     public String toString() {
@@ -48,6 +50,8 @@ public class Patient {
             ", iName='" + iName + '\'' +
             ", identityCard='" + identityCard + '\'' +
             ", results=" + results +
+            ", date=" + date +
+            ", iDate=" + iDate +
             '}';
     }
 }

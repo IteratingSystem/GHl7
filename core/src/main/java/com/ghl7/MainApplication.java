@@ -9,8 +9,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.ghl7.component.LogPanel;
 import com.ghl7.instrument.BaseClient;
 import com.ghl7.instrument.BaseInstrument;
-import com.ghl7.instrument.TestClient;
-import com.ghl7.receiving.H50Receiving;
+import com.ghl7.receiving.BaseReceiving;
+import com.ghl7.receiving.H50PlaceItem;
+import com.ghl7.receiving.H50ReceiveResults;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -58,13 +62,12 @@ public class MainApplication extends ApplicationAdapter {
     }
 
     private void runApp() {
-//        BaseClient h50Client = new BaseClient("H50",5001,false,"10.0.0.11",5100,new H50Receiving("H50"));
-        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,new H50Receiving("H50"));
-//        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
+        List<BaseReceiving> receivings = new ArrayList<>();
+        receivings.add(new H50ReceiveResults("H50","ORU","R01"));
+        receivings.add(new H50PlaceItem("H50","ORM","R01"));
+//        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
+        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
         h50Client.start();
-
-//        TestClient testClient = new TestClient("H50",5001,false,"127.0.0.1",5100,new H50Receiving("H50"));
-//        testClient.start();
     }
 
     @Override

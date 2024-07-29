@@ -1,36 +1,19 @@
 package com.ghl7.instrument;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
-import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.*;
-import ca.uhn.hl7v2.concurrent.Service;
 import ca.uhn.hl7v2.llp.LLPException;
-import ca.uhn.hl7v2.llp.LowerLayerProtocol;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
-import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v231.message.ACK;
-import ca.uhn.hl7v2.model.v231.segment.PSH;
-import ca.uhn.hl7v2.parser.Parser;
-import ca.uhn.hl7v2.parser.PipeParser;
-import ca.uhn.hl7v2.protocol.ApplicationRouter;
-import ca.uhn.hl7v2.protocol.ReceivingApplication;
-import ca.uhn.hl7v2.protocol.impl.ApplicationRouterImpl;
 import ca.uhn.hl7v2.util.StandardSocketFactory;
 import com.ghl7.Log;
-import com.ghl7.message.MessageFactory;
-import org.omg.Messaging.SYNC_WITH_TRANSPORT;
+import com.ghl7.receiving.BaseReceiving;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.*;
-
-import static com.badlogic.gdx.utils.reflect.ClassReflection.getDeclaredField;
 
 /**
  * @Auther WenLong
@@ -40,15 +23,16 @@ import static com.badlogic.gdx.utils.reflect.ClassReflection.getDeclaredField;
 public class BaseClient extends BaseInstrument{
     private int targetPort;
     private String targetHost;
-    private ReceivingApplication receivingApplication;
+//    private ReceivingApplication receivingApplication;
+    private List<BaseReceiving> receivings;
 
     private HapiContext context;
     private HL7Service service;
-    public BaseClient(String mid, int port, boolean useSTL,String targetHost,int targetPort,ReceivingApplication receivingApplication) {
+    public BaseClient(String mid, int port, boolean useSTL,String targetHost,int targetPort,List<BaseReceiving> receivings) {
         super(mid, port, useSTL);
         this.targetHost = targetHost;
         this.targetPort = targetPort;
-        this.receivingApplication = receivingApplication;
+        this.receivings = receivings;
     }
 
     @Override
@@ -70,7 +54,9 @@ public class BaseClient extends BaseInstrument{
             context.setLowerLayerProtocol(mllp);
 
             service = context.newServer(port,useSTL);
-            service.registerApplication(receivingApplication);
+            for (BaseReceiving receiving : receivings) {
+                service.registerApplication(receiving.type,receiving.event,receiving);
+            }
             service.setExceptionHandler(new ExceptionHandler());
             service.startAndWait();
 

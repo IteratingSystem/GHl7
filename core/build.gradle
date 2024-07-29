@@ -6,4 +6,8 @@ dependencies {
   api "com.microsoft.sqlserver:mssql-jdbc:12.6.2.jre8"
   api "ca.uhn.hapi:hapi-base:$hapiVersion"
   api "ca.uhn.hapi:hapi-structures-v231:$hapiVersion"
+
+  api "org.slf4j:slf4j-api:$log4jVersion"
+  api "org.slf4j:slf4j-simple:$log4jVersion"
+  api "org.slf4j:slf4j-nop:$log4jVersion"
 }

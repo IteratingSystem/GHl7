@@ -11,7 +11,6 @@ import ca.uhn.hl7v2.model.v231.message.ORU_R01;
 import ca.uhn.hl7v2.model.v231.segment.MSH;
 import ca.uhn.hl7v2.model.v231.segment.PSH;
 import ca.uhn.hl7v2.parser.ModelClassFactory;
-import com.ghl7.message.MessageFactory;
 
 import java.io.IOException;
 import java.util.List;
