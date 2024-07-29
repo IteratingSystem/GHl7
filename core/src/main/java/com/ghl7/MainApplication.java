@@ -3,8 +3,10 @@ package com.ghl7;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.ghl7.component.LogPanel;
 import com.ghl7.instrument.BaseClient;
@@ -43,6 +45,12 @@ public class MainApplication extends ApplicationAdapter {
         scrollPane.setScrollingDisabled(false, false);
 
         TextButton clear = new TextButton("clear",skin);
+        clear.addListener(new ClickListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                super.touchUp(event, x, y, pointer, button);
+            }
+        });
         TextButton save = new TextButton("save",skin);
 
         Table table = new Table();
@@ -64,9 +72,9 @@ public class MainApplication extends ApplicationAdapter {
     private void runApp() {
         List<BaseReceiving> receivings = new ArrayList<>();
         receivings.add(new H50ReceiveResults("H50","ORU","R01"));
-        receivings.add(new H50PlaceItem("H50","ORM","R01"));
-//        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
-        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
+        receivings.add(new H50PlaceItem("H50","ORM","O01"));
+        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
+//        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
         h50Client.start();
     }
 

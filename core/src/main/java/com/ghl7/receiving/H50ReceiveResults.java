@@ -42,10 +42,10 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 Log.log("Error:originalId is empty!");
                 return response;
             }else if (originalId.length() <= 6) {
-                Log.log("Length <= 6,Is sid.");
+                Log.log("Length <= 6,Is sid:"+originalId);
                 sid = originalId;
             }else {
-                Log.log("Length > 6,Is barcode.");
+                Log.log("Length > 6,Is barcode:"+originalId);
                 barcode = originalId;
             }
 
@@ -73,7 +73,7 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
 
 
             //以样本号接收结果
-            if (StringUtils.isEmpty(sid)){
+            if (!StringUtils.isEmpty(sid)){
 
                 Patient patient = SQLMapper.getPatient(sid,mid,resDate);
                 if (patient == null){

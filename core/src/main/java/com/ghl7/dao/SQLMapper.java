@@ -93,7 +93,8 @@ public class SQLMapper {
         Log.log("Finished to save patient!");
     }
     public static Patient getPatient(String sid,String mid,String date){
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
+        Log.log("Data:"+date);
         LocalDateTime dateTime = LocalDateTime.parse(date,dateTimeFormatter);
         LocalDate localDate = dateTime.toLocalDate();
         String sDate = localDate.format(dateTimeFormatter);

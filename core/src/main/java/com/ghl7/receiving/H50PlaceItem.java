@@ -36,14 +36,19 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
         if (StringUtils.isEmpty(controlID)){
             Log.log("Error:controlID is empty");
         }
+        Log.log("ControlID:"+controlID);
         Transmit transmit = new Transmit();
         transmit.controlId = controlID;
         transmit.message = message;
 
+
+
         ORC orc = null;
         try {
-            orc = (ORC)message.get("ORC");
-            String barcode = orc.getFillerOrderNumber().getUniversalID().getValue();
+//            orc = (ORC)message.get("ORC");
+//            String barcode = orc.getFillerOrderNumber().getUniversalID().getValue();
+
+            String barcode = MessageHelper.getData(message,"/.ORC-2");
             Log.log("Barcode is "+barcode);
 
             Patient patient = SQLMapper.getPatient(barcode, mid);
