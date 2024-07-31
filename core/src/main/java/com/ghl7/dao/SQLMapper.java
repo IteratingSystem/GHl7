@@ -85,9 +85,9 @@ public class SQLMapper {
 
         for (Result result : patient.results) {
             sql = "INSERT INTO " +
-                "[resulto] ([res_mid], [res_sid], [res_it_ecd], [res_chr], [res_date], [res_id], [res_sor_flag], [res_user]) " +
+                "[resulto] ([res_mid], [res_sid], [res_it_ecd], [res_chr], [res_date], [res_id], [res_sor_flag], [res_user],[res_bar_code]) " +
                 "VALUES " +
-                "('" + patient.mid + "'," + patient.sid + ",'" + result.itemName + "','" + result.result + "','" + result.resDate + "','" + patient.id + "',1,'" + patient.iName + "');";
+                "('" + patient.mid + "'," + patient.sid + ",'" + result.itemName + "','" + result.result + "','" + result.resDate + "','" + patient.id + "',1,'" + patient.iName + "','"+patient.barcode+"');";
             insert(sql);
         }
         Log.log("Finished to save patient!");
@@ -109,10 +109,13 @@ public class SQLMapper {
             "and pat_date >= '"+sDate+"'" +
             "and pat_sid = "+sid+"; ";
         ResultSet query = query(sql);
-        Patient patient = null;
+        Patient patient = new Patient();
         try {
-            query.next();
-            patient = new Patient();
+            if (!query.next()){
+                Log.log("Failed to query patient message!Haven't line");
+                return patient;
+            }
+
             patient.id = query.getString("pat_id");
             patient.sid = query.getString("pat_sid");
             patient.barcode = query.getString("pat_bar_code");
@@ -135,18 +138,22 @@ public class SQLMapper {
         return patient;
     }
     public static Patient getPatient(String barcode,String mid){
-        String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card\n" +
+        String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card \n" +
             "from patients \n" +
-            "where 1=1\n" +
-            "and pat_bar_code = '"+barcode+"'\n" +
-            "and pat_mid = '"+mid+"'\n" +
+            "where 1=1 \n" +
+            "and pat_bar_code = '"+barcode+"' \n" +
+            "and pat_mid = '"+mid+"' \n" +
             "order by pat_date desc;";
 
         ResultSet query = query(sql);
-        Patient patient = null;
+
+        Patient patient = new Patient();
         try {
-            query.next();
-            patient = new Patient();
+            if (!query.next()){
+                Log.log("Failed to query patient message!Haven't line");
+                return patient;
+            }
+
             patient.id = query.getString("pat_id");
             patient.sid = query.getString("pat_sid");
             patient.barcode = query.getString("pat_bar_code");

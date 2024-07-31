@@ -3,7 +3,7 @@ eclipse.project.name = appName + '-core'
 
 dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
-  api "com.microsoft.sqlserver:mssql-jdbc:12.6.2.jre8"
+  api "com.microsoft.sqlserver:mssql-jdbc:8.4.1.jre8"
   api "ca.uhn.hapi:hapi-base:$hapiVersion"
   api "ca.uhn.hapi:hapi-structures-v231:$hapiVersion"
 

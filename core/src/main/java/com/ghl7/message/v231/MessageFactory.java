@@ -7,8 +7,10 @@ import ca.uhn.hl7v2.model.v231.group.ORR_O02_PIDNTEORCOBRRQDRQ1RXOODSODTNTECTI;
 import ca.uhn.hl7v2.model.v231.message.ACK;
 import ca.uhn.hl7v2.model.v231.message.ORR_O02;
 import ca.uhn.hl7v2.model.v231.segment.*;
+import ca.uhn.hl7v2.parser.PipeParser;
 import com.ghl7.Log;
 import com.ghl7.pojo.Transmit;
+import com.ghl7.segment.CORR_O02;
 
 /**
  * @Author: WenLong
@@ -63,10 +65,9 @@ public class MessageFactory {
         return ack;
     }
 
-
-    public static ORR_O02 generateORR_O02(Transmit transmit){
-        ORR_O02 orrO02 = new ORR_O02();
-        transmit.message = orrO02;
+    public static CORR_O02 generateORR_O02(Transmit transmit){
+        CORR_O02 orrO02 = new CORR_O02();
+        transmit.responseMessage = orrO02;
         transmit.type = "ORR";
         transmit.event = "O02";
         transmit.modelClassFactory = orrO02.getModelClassFactory();
@@ -76,17 +77,6 @@ public class MessageFactory {
         PV1 pv1 = StructureFactory.getPV1(transmit);
         ORC orc = StructureFactory.getORC(transmit);
         OBR obr = StructureFactory.getOBR(transmit);
-
-        OBX obx = new OBX(orrO02, transmit.modelClassFactory);
-        try {
-            obx.getSetIDOBX().setValue("1");
-            obx.getValueType().setValue("NM");
-            obx.getObservationIdentifier().getIdentifier().setValue("17856-6");
-            obx.getObservationIdentifier().getAlternateText().setValue("HbA1c");
-        } catch (DataTypeException e) {
-            Log.log("Failed to create OBX with ORR_O02;");
-            throw new RuntimeException(e);
-        }
         return orrO02;
     }
 

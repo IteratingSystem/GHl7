@@ -68,6 +68,7 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 result.itemName = itemName;
                 result.result = resultValue;
                 result.resDate = resDate;
+                Log.log("Get item result:name:"+itemName+";result:"+resultValue);
                 results.add(result);
             }
 

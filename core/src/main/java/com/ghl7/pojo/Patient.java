@@ -49,7 +49,6 @@ public class Patient {
             ", sName='" + sName + '\'' +
             ", iName='" + iName + '\'' +
             ", identityCard='" + identityCard + '\'' +
-            ", results=" + results +
             ", date=" + date +
             ", iDate=" + iDate +
             '}';

@@ -18,7 +18,7 @@ import java.util.List;
  **/
 public class StructureFactory {
     public static MSH getMSH(Transmit transmit){
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get MSH:message is null;");
             return null;
@@ -56,7 +56,7 @@ public class StructureFactory {
     }
 
     public static MSA getMSA(Transmit transmit) {
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get MSA:message is null;");
             return null;
@@ -74,7 +74,7 @@ public class StructureFactory {
     }
 
     public static PID getPID(Transmit transmit) {
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get PID:message is null;");
             return null;
@@ -90,8 +90,10 @@ public class StructureFactory {
         try {
             pid = (PID)message.get("PID");
             pid.getPid1_SetIDPID().setValue("1");
-            pid.getPatientIdentifierList()[0].getID().setValue("C1");
-            pid.getPatientIdentifierList()[4].getID().setValue("MR");
+//            pid.insertPatientIdentifierList(0).getCx1_ID().setValue("C1");
+            pid.insertPatientIdentifierList(0).getCx5_IdentifierTypeCode().setValue("MR");
+//            pid.insertPatientName(0).getXpn2_GivenName().setValue(patient.name);
+            pid.getSex().setValue("Male");
         } catch (HL7Exception e) {
             Log.log("Failed to get PID:Not has PID in the message;");
             throw new RuntimeException(e);
@@ -100,7 +102,7 @@ public class StructureFactory {
     }
 
     public static PV1 getPV1(Transmit transmit) {
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get PV1:message is null;");
             return null;
@@ -116,10 +118,10 @@ public class StructureFactory {
         try {
             pv1 = (PV1)message.get("PV1");
             pv1.getSetIDPV1().setValue("1");
-            pv1.getPatientClass().setValue("Outpatient");
-            pv1.getAssignedPatientLocation().getLocationDescription().setValue(patient.depart);
-            pv1.getAssignedPatientLocation().getBed().setValue("BN1");
-            pv1.getFinancialClass()[0].getFinancialClass().setValue("MedicalInsurance");
+            pv1.getPatientClass().setValue("");
+            pv1.getAssignedPatientLocation().getLocationDescription().setValue("");
+            pv1.getAssignedPatientLocation().getBed().setValue("");
+            pv1.insertFinancialClass(0).getFinancialClass().setValue("");
         } catch (HL7Exception e) {
             Log.log("Failed to get PV1:Not has PV1 in the message;");
             throw new RuntimeException(e);
@@ -128,7 +130,7 @@ public class StructureFactory {
     }
 
     public static OBR getOBR(Transmit transmit) {
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get OBR:message is null;");
             return null;
@@ -144,12 +146,14 @@ public class StructureFactory {
         try {
             obr = (OBR)message.get("OBR");
             obr.getSetIDOBR().setValue("1");
-            obr.getFillerOrderNumber().getUniversalID().setValue(patient.barcode);
-            obr.getUniversalServiceID().getText().setValue("00001");
-            obr.getRequestedDateTime().getTimeOfAnEvent().setValue(patient.date);
-            obr.getObservationDateTime().getTimeOfAnEvent().setValue(patient.iDate);
-            obr.getCollectorIdentifier()[0].getGivenName().setValue("LI");
-            obr.getPrincipalResultInterpreter().getOPName().getGivenName().setValue("admin");
+            obr.getPlacerOrderNumber().getEi1_EntityIdentifier().setValue(patient.barcode);
+//            obr.getFillerOrderNumber().getUniversalID().setValue(patient.barcode);
+//            obr.getUniversalServiceID().getText().setValue("00001");
+//            obr.getRequestedDateTime().getTimeOfAnEvent().setValue(patient.date);
+//            obr.getObservationDateTime().getTimeOfAnEvent().setValue(patient.iDate);
+//            obr.getCollectorIdentifier()[0].getGivenName().setValue("LI");
+//            obr.getPrincipalResultInterpreter().getOPName().getGivenName().setValue("admin");
+            obr.getDiagnosticServSectID().setValue("HM");
         } catch (HL7Exception e) {
             Log.log("Failed to get OBR:Not has OBR in the message;");
             throw new RuntimeException(e);
@@ -158,7 +162,7 @@ public class StructureFactory {
     }
 
     public static ORC getORC(Transmit transmit) {
-        Message message = transmit.message;
+        Message message = transmit.responseMessage;
         if (message == null){
             Log.log("Failed to get ORC:message is null;");
             return null;
@@ -173,8 +177,9 @@ public class StructureFactory {
         ORC orc = null;
         try {
             orc = (ORC)message.get("ORC");
-            orc.getOrderControl().setValue("RF");
-            orc.getFillerOrderNumber().getUniversalID().setValue(patient.barcode);
+            orc.getOrderControl().setValue("AF");
+            orc.getPlacerOrderNumber().getEi1_EntityIdentifier().setValue(patient.barcode);
+//            orc.getFillerOrderNumber().getUniversalID().setValue(patient.barcode);
             orc.getOrderStatus().setValue("IP");
         } catch (HL7Exception e) {
             Log.log("Failed to get ORC:Not has ORC in the message;");
@@ -182,6 +187,7 @@ public class StructureFactory {
         }
         return orc;
     }
+
 
 //    public static void getOBX(Transmit transmit) {
 //        Message message = transmit.message;

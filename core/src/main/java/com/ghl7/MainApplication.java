@@ -59,8 +59,8 @@ public class MainApplication extends ApplicationAdapter {
 
         table.add(scrollPane).colspan(2);
         table.row();
-        table.add(clear);
-        table.add(save);
+//        table.add(clear);
+//        table.add(save);
 
         stage = new Stage();
         stage.addActor(table);
