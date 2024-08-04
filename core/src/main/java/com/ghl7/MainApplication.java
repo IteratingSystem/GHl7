@@ -73,8 +73,8 @@ public class MainApplication extends ApplicationAdapter {
         List<BaseReceiving> receivings = new ArrayList<>();
         receivings.add(new H50ReceiveResults("H50","ORU","R01"));
         receivings.add(new H50PlaceItem("H50","ORM","O01"));
-        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
-//        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
+//        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
+        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
         h50Client.start();
     }
 

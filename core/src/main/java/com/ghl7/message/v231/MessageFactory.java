@@ -77,6 +77,7 @@ public class MessageFactory {
         PV1 pv1 = StructureFactory.getPV1(transmit);
         ORC orc = StructureFactory.getORC(transmit);
         OBR obr = StructureFactory.getOBR(transmit);
+        int obxLength = StructureFactory.createOBX(transmit);
         return orrO02;
     }
 

@@ -3,12 +3,19 @@ package com.ghl7.message.v231;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Structure;
+import ca.uhn.hl7v2.model.v231.datatype.ST;
 import ca.uhn.hl7v2.model.v231.segment.*;
+import ca.uhn.hl7v2.model.v231.datatype.ID;
 import com.ghl7.Log;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 import com.ghl7.pojo.Transmit;
+import com.ghl7.segment.CORR_O02;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +55,8 @@ public class StructureFactory {
             //发送的结果类型
             msh.getAcceptAcknowledgmentType().setValue("");
             msh.getApplicationAcknowledgmentType().setValue("");
+            ID id = msh.insertCharacterSet(0);
+            id.setValue("UNICODE");
         } catch (HL7Exception e) {
             Log.log("Failed to get MSH,Not has MSH in the message!");
             throw new RuntimeException(e);
@@ -90,10 +99,11 @@ public class StructureFactory {
         try {
             pid = (PID)message.get("PID");
             pid.getPid1_SetIDPID().setValue("1");
-//            pid.insertPatientIdentifierList(0).getCx1_ID().setValue("C1");
-            pid.insertPatientIdentifierList(0).getCx5_IdentifierTypeCode().setValue("MR");
-//            pid.insertPatientName(0).getXpn2_GivenName().setValue(patient.name);
-            pid.getSex().setValue("Male");
+            pid.insertPatientIdentifierList(0).getIdentifierTypeCode().setValue("MR");
+            pid.getPatientIdentifierList(0).getID().setValue("CharNo");
+            pid.getDateTimeOfBirth().getTimeOfAnEvent().setValue("19810506");
+            pid.insertPatientName(0).getXpn2_GivenName().setValue("FName");
+            pid.getSex().setValue("NT");
         } catch (HL7Exception e) {
             Log.log("Failed to get PID:Not has PID in the message;");
             throw new RuntimeException(e);
@@ -118,10 +128,10 @@ public class StructureFactory {
         try {
             pv1 = (PV1)message.get("PV1");
             pv1.getSetIDPV1().setValue("1");
-            pv1.getPatientClass().setValue("");
-            pv1.getAssignedPatientLocation().getLocationDescription().setValue("");
-            pv1.getAssignedPatientLocation().getBed().setValue("");
-            pv1.insertFinancialClass(0).getFinancialClass().setValue("");
+            pv1.getPatientClass().setValue("E");
+            pv1.getAssignedPatientLocation().getBed().setValue("Bn4");
+            pv1.getAssignedPatientLocation().getPl1_PointOfCare().setValue("内科");
+            pv1.insertFinancialClass(0).getFinancialClass().setValue("NewChange");
         } catch (HL7Exception e) {
             Log.log("Failed to get PV1:Not has PV1 in the message;");
             throw new RuntimeException(e);
@@ -144,16 +154,25 @@ public class StructureFactory {
 
         OBR obr = null;
         try {
+            LocalDateTime date = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
+            String formattedDate = date.format(formatter);
+
             obr = (OBR)message.get("OBR");
             obr.getSetIDOBR().setValue("1");
             obr.getPlacerOrderNumber().getEi1_EntityIdentifier().setValue(patient.barcode);
 //            obr.getFillerOrderNumber().getUniversalID().setValue(patient.barcode);
-//            obr.getUniversalServiceID().getText().setValue("00001");
-//            obr.getRequestedDateTime().getTimeOfAnEvent().setValue(patient.date);
-//            obr.getObservationDateTime().getTimeOfAnEvent().setValue(patient.iDate);
-//            obr.getCollectorIdentifier()[0].getGivenName().setValue("LI");
+            obr.getUniversalServiceID().getCe1_Identifier().setValue("00001");
+            obr.getUniversalServiceID().getCe2_Text().setValue("Automated Count");
+            obr.getUniversalServiceID().getCe3_NameOfCodingSystem().setValue("99MRC");
+            obr.getRequestedDateTime().getTimeOfAnEvent().setValue(formattedDate);
+//            obr.getObservationDateTime().getTimeOfAnEvent().setValue(formattedDate);
+            obr.insertCollectorIdentifier(0).getXcn1_IDNumber().setValue("张连峰");
 //            obr.getPrincipalResultInterpreter().getOPName().getGivenName().setValue("admin");
+            obr.getSpecimenReceivedDateTime().getTimeOfAnEvent().setValue(formattedDate);
             obr.getDiagnosticServSectID().setValue("HM");
+            obr.getResultCopiesTo(0).getXcn1_IDNumber().setValue("");
+            obr.getPrincipalResultInterpreter().getNdl1_OPName().getCn1_IDNumber().setValue("CheckerHerry");
         } catch (HL7Exception e) {
             Log.log("Failed to get OBR:Not has OBR in the message;");
             throw new RuntimeException(e);
@@ -186,6 +205,98 @@ public class StructureFactory {
             throw new RuntimeException(e);
         }
         return orc;
+    }
+
+    public static int createOBX(Transmit transmit) {
+        Message message = transmit.responseMessage;
+        if (message == null){
+            Log.log("Failed to get OBX:message is null;");
+            return 0;
+        }
+
+        Patient patient = transmit.patient;
+        if (patient == null){
+            Log.log("Failed to get OBX:patient is null;");
+            return 0;
+        }
+
+        CORR_O02 corrO02 = (CORR_O02) message;
+        try {
+            Log.log("Try to create ORR_O02!");
+            OBX obx = corrO02.insertOBX(0);
+            obx.getSetIDOBX().setValue("1");
+            obx.getValueType().setValue("IS");
+            obx.getObservationIdentifier().getCe1_Identifier().setValue("08001");
+            obx.getObservationIdentifier().getCe2_Text().setValue("Take Mode");
+            obx.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("99MRC");
+            ST st = new ST(corrO02);
+            st.setValue("A");
+            obx.insertObservationValue(0).setData(st);
+//            obx.getAbnormalFlags(0).setValue("A");
+            obx.getObservationResultStatus().setValue("F");
+
+            OBX obx2 = corrO02.insertOBX(1);
+            obx2.getSetIDOBX().setValue("2");
+            obx2.getValueType().setValue("IS");
+            obx2.getObservationIdentifier().getCe1_Identifier().setValue("08002");
+            obx2.getObservationIdentifier().getCe2_Text().setValue("Blood Mode");
+            obx2.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("99MRC");
+            ST st2 = new ST(corrO02);
+            st2.setValue("W");
+            obx2.insertObservationValue(0).setData(st2);
+//            obx2.getAbnormalFlags(0).setValue("W");
+            obx2.getObservationResultStatus().setValue("F");
+
+            OBX obx3 = corrO02.insertOBX(2);
+            obx3.getSetIDOBX().setValue("3");
+            obx3.getValueType().setValue("IS");
+            obx3.getObservationIdentifier().getCe1_Identifier().setValue("08003");
+            obx3.getObservationIdentifier().getCe2_Text().setValue("Test Mode");
+            obx3.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("99MRC");
+            ST st3 = new ST(corrO02);
+            st3.setValue("STANDARD");
+            obx3.insertObservationValue(0).setData(st3);
+//            obx3.getAbnormalFlags(0).setValue("STANDARD");
+            obx3.getObservationResultStatus().setValue("F");
+
+            OBX obx4 = corrO02.insertOBX(3);
+            obx4.getSetIDOBX().setValue("4");
+            obx4.getValueType().setValue("IS");
+            obx4.getObservationIdentifier().getCe1_Identifier().setValue("01002");
+            obx4.getObservationIdentifier().getCe2_Text().setValue("Ref Group");
+            obx4.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("99MRC");
+            ST st4 = new ST(corrO02);
+            st4.setValue("XXXX");
+            obx4.insertObservationValue(0).setData(st4);
+//            obx4.getAbnormalFlags(0).setValue("XXXX");
+            obx4.getObservationResultStatus().setValue("F");
+
+            OBX obx5 = corrO02.insertOBX(4);
+            obx5.getSetIDOBX().setValue("5");
+            obx5.getValueType().setValue("NM");
+            obx5.getObservationIdentifier().getCe1_Identifier().setValue("30525-0");
+            obx5.getObservationIdentifier().getCe2_Text().setValue("Age");
+            obx5.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("LN");
+            ST st5 = new ST(corrO02);
+            st5.setValue("22");
+            obx5.insertObservationValue(0).setData(st5);
+            obx5.getUnits().getCe1_Identifier().setValue("yr");
+            obx5.getObservationResultStatus().setValue("F");
+
+            OBX obx6 = corrO02.insertOBX(5);
+            obx6.getSetIDOBX().setValue("6");
+            obx6.getValueType().setValue("ST");
+            obx6.getObservationIdentifier().getCe1_Identifier().setValue("01001");
+            obx6.getObservationIdentifier().getCe2_Text().setValue("Remark");
+            obx6.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("99MRC");
+//            obx6.getAbnormalFlags(0).setValue("22");
+            obx6.getObservationResultStatus().setValue("F");
+
+        } catch (HL7Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return 0;
     }
 
 

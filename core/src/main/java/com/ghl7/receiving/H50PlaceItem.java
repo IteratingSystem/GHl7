@@ -52,28 +52,31 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
             String barcode = MessageHelper.getData(message,"/.ORC-3");
             Log.log("Barcode is "+barcode);
 
-            Patient patient = SQLMapper.getPatient(barcode, mid);
-            transmit.patient = patient;
-            if (patient == null){
-                Log.log("Not has patient has barcode:"+barcode);
-            }
+//            Patient patient = SQLMapper.getPatient(barcode, mid);
+//            transmit.patient = patient;
+//            if (patient == null){
+//                Log.log("Not has patient has barcode:"+barcode);
+//            }
 
             Log.log("Creating ORR_R02");
+            Patient patient = new Patient();
+            patient.barcode = barcode;
+            transmit.patient = patient;
             CORR_O02 orrO02 = MessageFactory.generateORR_O02(transmit);
-            OBX obx = orrO02.getOBX();
-            obx.getObx1_SetIDOBX().setValue("1");
-            obx.getValueType().setValue("NM");
-            obx.getObservationIdentifier().getCe1_Identifier().setValue("17856-6");
-            obx.getObservationIdentifier().getCe2_Text().setValue("HbA1c%");
-            obx.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("LN");
-            TX observationValue = new TX(orrO02);
-            observationValue.setValue("6.7");
-            obx.insertObservationValue(0).setData(observationValue);
-            obx.getUnits().getCe1_Identifier().setValue("%(NGSP)");
-            obx.getReferencesRange().setValue("4.0-6.0");
-            obx.insertAbnormalFlags(0).setValue("H");
-            obx.insertAbnormalFlags(1).setValue("N");
-            obx.getObservationResultStatus().setValue("F");
+//            OBX obx = orrO02.getOBX();
+//            obx.getObx1_SetIDOBX().setValue("1");
+//            obx.getValueType().setValue("NM");
+//            obx.getObservationIdentifier().getCe1_Identifier().setValue("17856-6");
+//            obx.getObservationIdentifier().getCe2_Text().setValue("HbA1c%");
+//            obx.getObservationIdentifier().getCe3_NameOfCodingSystem().setValue("LN");
+//            TX observationValue = new TX(orrO02);
+//            observationValue.setValue("6.7");
+//            obx.insertObservationValue(0).setData(observationValue);
+//            obx.getUnits().getCe1_Identifier().setValue("%(NGSP)");
+//            obx.getReferencesRange().setValue("4.0-6.0");
+//            obx.insertAbnormalFlags(0).setValue("H");
+//            obx.insertAbnormalFlags(1).setValue("N");
+//            obx.getObservationResultStatus().setValue("F");
             MessageHelper.logMessage(orrO02);
 
             return orrO02;
