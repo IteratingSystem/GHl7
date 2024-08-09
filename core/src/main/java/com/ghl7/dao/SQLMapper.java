@@ -150,7 +150,7 @@ public class SQLMapper {
             "from patients \n" +
             "where 1=1 \n" +
             "and pat_bar_code = '"+barcode+"' \n" +
-            "and pat_mid = '"+mid+"' \n" +
+//            "and pat_mid = '"+mid+"' \n" +
             "order by pat_date desc;";
 
         ResultSet query = query(sql);
