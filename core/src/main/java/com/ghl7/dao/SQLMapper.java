@@ -112,7 +112,7 @@ public class SQLMapper {
         String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card " +
             "from patients " +
             "where 1=1 " +
-            "and pat_mid = '"+mid+"'" +
+//            "and pat_mid = '"+mid+"'" +
             "and pat_date < '"+eDate+"'" +
             "and pat_date >= '"+sDate+"'" +
             "and pat_sid = "+sid+"; ";
