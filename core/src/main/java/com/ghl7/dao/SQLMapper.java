@@ -73,12 +73,20 @@ public class SQLMapper {
         return num;
     }
     public static void saveResult(Patient patient){
-
         Log.log("Save patient begin:"+patient);
+        String results = "";
+        for (Result result : patient.results) {
+            String itemName = result.itemName;
+            results += itemName+"','";
+        }
+        results = "('"+results+"')";
+
+
         String sql = "delete resulto \n" +
             "where 1=1\n" +
             "and res_id = '"+patient.id+"'\n" +
             "and res_sid = "+patient.sid+"\n" +
+            "and res_it_ecd in "+results+"\n" +
             "and res_mid = '"+patient.mid+"';";
 
         update(sql);

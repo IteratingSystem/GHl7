@@ -64,6 +64,9 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 String resultValue = obx[5];
                 resDate = MessageHelper.getData(message,"/.OBR-7");
                 resDate = MessageHelper.strToFormatStr(resDate);
+                if (!"HbA1c%".equals(itemName)) {
+                    continue;
+                }
                 Result result = new Result();
                 result.itemName = itemName;
                 result.result = resultValue;
