@@ -43,7 +43,11 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 return response;
             }else if (originalId.length() <= 6) {
                 Log.log("Length <= 6,Is sid:"+originalId);
-                sid = originalId;
+//                sid = originalId;
+                sid = MessageHelper.getData(message,"/.PID-3");
+                if (StringUtils.isEmpty(sid)){
+                    sid = originalId;
+                }
             }else {
                 Log.log("Length > 6,Is barcode:"+originalId);
                 barcode = originalId;
@@ -63,14 +67,13 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
                 resDate = MessageHelper.getData(message,"/.OBR-7");
-                resDate = MessageHelper.strToFormatStr(resDate);
                 if (!"HbA1c%".equals(itemName)) {
                     continue;
                 }
                 Result result = new Result();
                 result.itemName = itemName;
                 result.result = resultValue;
-                result.resDate = resDate;
+
                 Log.log("Get item result:name:"+itemName+";result:"+resultValue);
                 results.add(result);
             }
@@ -78,7 +81,6 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
 
             //以样本号接收结果
             if (!StringUtils.isEmpty(sid)){
-
                 Patient patient = SQLMapper.getPatient(sid,mid,resDate);
                 if (patient == null){
                     Log.log("This patient not in system;sid:"+sid);

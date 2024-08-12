@@ -101,13 +101,15 @@ public class SQLMapper {
         Log.log("Finished to save patient!");
     }
     public static Patient getPatient(String sid,String mid,String date){
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
-        Log.log("Data:"+date);
+        Log.log("Get patients by sid,date:"+date+",sid:"+sid);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime dateTime = LocalDateTime.parse(date,dateTimeFormatter);
         LocalDate localDate = dateTime.toLocalDate();
-        String sDate = localDate.format(dateTimeFormatter);
+        DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String sDate = localDate.format(dateTimeFormatter2);
         LocalDate eLocalDate = localDate.plusDays(1);
-        String eDate = eLocalDate.format(dateTimeFormatter);
+        String eDate = eLocalDate.format(dateTimeFormatter2);
+        Log.log("Success to get date,sDate:"+sDate+",eDate:"+eDate);
 
         String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card " +
             "from patients " +
