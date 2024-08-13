@@ -38,32 +38,32 @@ public class MainApplication extends ApplicationAdapter {
         Skin skin = assetManager.get(SKIN_PATH, Skin.class);
 
 
-        LOG_PANEL = new LogPanel(skin);
-        ScrollPane scrollPane = new ScrollPane(LOG_PANEL);
-        scrollPane.setScrollbarsVisible(true);
-        scrollPane.setFadeScrollBars(true);
-        scrollPane.setScrollingDisabled(false, false);
+//        LOG_PANEL = new LogPanel(skin);
+//        ScrollPane scrollPane = new ScrollPane(LOG_PANEL);
+//        scrollPane.setScrollbarsVisible(true);
+//        scrollPane.setFadeScrollBars(true);
+//        scrollPane.setScrollingDisabled(false, false);
 
-        TextButton clear = new TextButton("clear",skin);
-        clear.addListener(new ClickListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                super.touchUp(event, x, y, pointer, button);
-            }
-        });
-        TextButton save = new TextButton("save",skin);
+//        TextButton clear = new TextButton("clear",skin);
+//        clear.addListener(new ClickListener(){
+//            @Override
+//            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+//                super.touchUp(event, x, y, pointer, button);
+//            }
+//        });
+//        TextButton save = new TextButton("save",skin);
 
-        Table table = new Table();
-        table.setFillParent(true);
-        table.setDebug(false);
+//        Table table = new Table();
+//        table.setFillParent(true);
+//        table.setDebug(false);
 
-        table.add(scrollPane).colspan(2);
-        table.row();
+//        table.add(scrollPane).colspan(2);
+//        table.row();
 //        table.add(clear);
 //        table.add(save);
 
         stage = new Stage();
-        stage.addActor(table);
+//        stage.addActor(table);
         Gdx.input.setInputProcessor(stage);
 
         runApp();

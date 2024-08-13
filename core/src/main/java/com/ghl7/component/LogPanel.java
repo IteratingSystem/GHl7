@@ -22,7 +22,7 @@ public class LogPanel extends Table {
     }
 
     public void log(String log){
-        textArea.appendText(" "+log+"\n");
+//        textArea.appendText(" "+log+"\n");
     }
 
     @Override

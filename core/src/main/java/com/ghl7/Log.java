@@ -17,6 +17,7 @@ public class Log {
     private final static LogPanel LOG_PANEL = MainApplication.LOG_PANEL;
     public static void log(String text){
         if (LOG_PANEL == null){
+            System.out.println(text);
             return;
         }
         LOG_PANEL.log(text);

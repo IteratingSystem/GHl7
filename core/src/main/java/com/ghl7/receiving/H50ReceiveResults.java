@@ -67,13 +67,14 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
                 resDate = MessageHelper.getData(message,"/.OBR-7");
+
                 if (!"HbA1c%".equals(itemName)) {
                     continue;
                 }
                 Result result = new Result();
                 result.itemName = itemName;
                 result.result = resultValue;
-
+                result.resDate = MessageHelper.strToFormatStr(resDate);
                 Log.log("Get item result:name:"+itemName+";result:"+resultValue);
                 results.add(result);
             }
