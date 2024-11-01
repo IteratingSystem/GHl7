@@ -4,9 +4,9 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v231.message.ORU_R01;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
-import com.ghl7.Log;
+import com.ghl7.Logger;
 import com.ghl7.dao.SQLMapper;
-import com.ghl7.message.v231.MessageHelper;
+import com.ghl7.message.MessageHelper;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 import com.microsoft.sqlserver.jdbc.StringUtils;
@@ -29,6 +29,9 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
 
     @Override
     public Message processMessage(ORU_R01 message, Map<String, Object> theMetadata) throws ReceivingApplicationException, HL7Exception {
+        Logger.log(getTag(),"Receiving message with result!");
+
+
         Message response = null;
         try {
             response = message.generateACK();
@@ -39,17 +42,17 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
             String sid = "";
             String barcode = "";
             if (StringUtils.isEmpty(originalId)){
-                Log.log("Error:originalId is empty!");
+                Logger.log("Error:originalId is empty!");
                 return response;
             }else if (originalId.length() <= 6) {
-                Log.log("Length <= 6,Is sid:"+originalId);
+                Logger.log("Length <= 6,Is sid:"+originalId);
 //                sid = originalId;
                 sid = MessageHelper.getData(message,"/.PID-3");
                 if (StringUtils.isEmpty(sid)){
                     sid = originalId;
                 }
             }else {
-                Log.log("Length > 6,Is barcode:"+originalId);
+                Logger.log("Length > 6,Is barcode:"+originalId);
                 barcode = originalId;
             }
 
@@ -75,7 +78,7 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 result.itemName = itemName;
                 result.result = resultValue;
                 result.resDate = MessageHelper.strToFormatStr(resDate);
-                Log.log("Get item result:name:"+itemName+";result:"+resultValue);
+                Logger.log("Get item result:name:"+itemName+";result:"+resultValue);
                 results.add(result);
             }
 
@@ -84,7 +87,7 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
             if (!StringUtils.isEmpty(sid)){
                 Patient patient = SQLMapper.getPatient(sid,mid,resDate);
                 if (patient == null){
-                    Log.log("This patient not in system;sid:"+sid);
+                    Logger.log("This patient not in system;sid:"+sid);
                     return response;
                 }
                 if ("7".equals(patient.status)){
@@ -95,11 +98,11 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
                 //以条码号接收结果
                 Patient patient = SQLMapper.getPatient(barcode, mid);
                 if (patient == null || StringUtils.isEmpty(patient.id)) {
-                    Log.log("This patient not in system;barcode:"+barcode);
+                    Logger.log("This patient not in system;barcode:"+barcode);
                     return response;
                 }
                 if (!"6".equals(patient.status)){
-                    Log.log("This barcode is not layout,barcode:"+barcode+",status:"+patient.status);
+                    Logger.log("This barcode is not layout,barcode:"+barcode+",status:"+patient.status);
                     return response;
                 }
                 patient.results = results;
@@ -108,7 +111,7 @@ public class H50ReceiveResults extends BaseReceiving<ORU_R01> {
             return response;
 
         } catch (IOException e) {
-            Log.log("Failed to generate ACK!");
+            Logger.log("Failed to generate ACK!");
             throw new RuntimeException(e);
         }
     }

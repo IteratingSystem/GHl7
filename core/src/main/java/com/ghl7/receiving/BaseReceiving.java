@@ -4,8 +4,8 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
-import com.ghl7.Log;
-import com.ghl7.message.v231.MessageHelper;
+import com.ghl7.Logger;
+import com.ghl7.message.MessageHelper;
 
 import java.util.Map;
 
@@ -18,6 +18,10 @@ public class BaseReceiving<T extends Message> implements ReceivingApplication<T>
     public String mid;
     public String type;
     public String event;
+
+    public String getTag(){
+        return getClass().getSimpleName();
+    }
 
     public BaseReceiving(String mid,String type,String event){
         this.mid = mid;
@@ -32,8 +36,7 @@ public class BaseReceiving<T extends Message> implements ReceivingApplication<T>
 
     @Override
     public boolean canProcess(T message) {
-        Log.log("Received message:");
-        MessageHelper.logMessage(message);
+        Logger.log(getTag(),"Received message: \n"+MessageHelper.getString(message));
         return true;
     }
 }

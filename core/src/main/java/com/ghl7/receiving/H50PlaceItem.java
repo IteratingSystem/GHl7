@@ -2,19 +2,12 @@ package com.ghl7.receiving;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
-import ca.uhn.hl7v2.model.v21.datatype.TM;
-import ca.uhn.hl7v2.model.v231.datatype.TX;
 import ca.uhn.hl7v2.model.v231.message.ORM_O01;
-import ca.uhn.hl7v2.model.v231.message.ORR_O02;
 import ca.uhn.hl7v2.model.v231.segment.MSH;
-import ca.uhn.hl7v2.model.v231.segment.OBX;
 import ca.uhn.hl7v2.model.v231.segment.ORC;
-import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
-import com.badlogic.gdx.utils.compression.lzma.Base;
-import com.ghl7.Log;
-import com.ghl7.dao.SQLMapper;
-import com.ghl7.message.v231.MessageFactory;
-import com.ghl7.message.v231.MessageHelper;
+import com.ghl7.Logger;
+import com.ghl7.message.MessageFactory;
+import com.ghl7.message.MessageHelper;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Transmit;
 import com.ghl7.segment.CORR_O02;
@@ -38,9 +31,9 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
         MSH msh = message.getMSH();
         String controlID = msh.getMessageControlID().getValue();
         if (StringUtils.isEmpty(controlID)){
-            Log.log("Error:controlID is empty");
+            Logger.log("Error:controlID is empty");
         }
-        Log.log("ControlID:"+controlID);
+        Logger.log("ControlID:"+controlID);
         Transmit transmit = new Transmit();
         transmit.controlId = controlID;
         transmit.requestMessage = message;
@@ -50,7 +43,7 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
         ORC orc = null;
         try {
             String barcode = MessageHelper.getData(message,"/.ORC-3");
-            Log.log("Barcode is "+barcode);
+            Logger.log("Barcode is "+barcode);
 
 //            Patient patient = SQLMapper.getPatient(barcode, mid);
 //            transmit.patient = patient;
@@ -58,7 +51,7 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
 //                Log.log("Not has patient has barcode:"+barcode);
 //            }
 
-            Log.log("Creating ORR_R02");
+            Logger.log("Creating ORR_R02");
             Patient patient = new Patient();
             patient.barcode = barcode;
             transmit.patient = patient;
@@ -81,7 +74,7 @@ public class H50PlaceItem extends BaseReceiving<ORM_O01> {
 
             return orrO02;
         } catch (HL7Exception e) {
-            Log.log("Failed to get ORC with ORM_O01!");
+            Logger.log("Failed to get ORC with ORM_O01!");
             throw new RuntimeException(e);
         }
 

@@ -6,7 +6,7 @@ import ca.uhn.hl7v2.app.*;
 import ca.uhn.hl7v2.llp.LLPException;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.util.StandardSocketFactory;
-import com.ghl7.Log;
+import com.ghl7.Logger;
 import com.ghl7.receiving.BaseReceiving;
 
 import java.io.IOException;
@@ -68,25 +68,9 @@ public class BaseClient extends BaseInstrument{
                 context.getLowerLayerProtocol(),
                 socket,
                 context.getExecutorService());
-            System.out.println("Success for create a connection!");
             service.newConnection(connection);
 
-
-//            Class<?> serviceC = Class.forName("ca.uhn.hl7v2.app.HL7Service");
-//            Field applicationRouterF = serviceC.getDeclaredField("applicationRouter");
-//            applicationRouterF.setAccessible(true);
-//            ApplicationRouter applicationRouter = (ApplicationRouter)applicationRouterF.get(service);
-//
-//            Class<?> activeConnectionC = connection.getClass();
-//            Field responderF = activeConnectionC.getDeclaredField("responder");
-//            responderF.setAccessible(true);
-//            Class<?> responderC = responderF.get(connection).getClass();
-//            Field appsF = responderC.getDeclaredField("apps");
-//            appsF.setAccessible(true);
-//            appsF.set(connection.getResponder(),applicationRouter);
-//            service.getRemoteConnections().add(connection);
-
-            Log.log("Client startup successful,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
+            Logger.log("Successful to startup client,Start port:" + port + ",Linked:" + targetHost + ":" + targetPort+",mid:"+mid);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

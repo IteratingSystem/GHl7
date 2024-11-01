@@ -2,7 +2,7 @@ package com.ghl7.instrument;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationExceptionHandler;
-import com.ghl7.Log;
+import com.ghl7.Logger;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import java.util.Map;
 public class ExceptionHandler implements ReceivingApplicationExceptionHandler {
     @Override
     public String processException(String s, Map<String, Object> map, String s1, Exception e) throws HL7Exception {
-        Log.log("Error:"+s+","+map+","+s1+","+e.getMessage());
+        Logger.log("Error:"+s+","+map+","+s1+","+e.getMessage());
         return null;
     }
 }

@@ -1,6 +1,6 @@
 package com.ghl7.dao;
 
-import com.ghl7.Log;
+import com.ghl7.Logger;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 
@@ -15,19 +15,25 @@ import java.time.format.DateTimeFormatter;
  * @Description
  **/
 public class SQLMapper {
-    private static final String URL = "jdbc:sqlserver://192.168.0.6:1433;databaseName=clabsdbc";
-    private static final String USER_NAME = "lis";
-    private static final String PASS_WORLD = "slis";
+    private final static String TAG = SQLMapper.class.getSimpleName();
+    private static String URL = "jdbc:sqlserver://192.168.0.6:1433;databaseName=clabsdbc";
+    private static String USER_NAME = "lis";
+    private static String PASS_WORLD = "slis";
     private static Connection connection;
 
+    public static void setData(String sqlUrl,String userName,String passwd){
+        URL = "jdbc:sqlserver://"+sqlUrl+":1433;databaseName=clabsdbc";
+        USER_NAME = userName;
+        PASS_WORLD = passwd;
+    }
 
     private static Statement getStatement() {
         if (connection == null){
             try {
-                Log.log("Connecting sql server...");
+                Logger.log(TAG,"Connecting sql server...");
                 connection = DriverManager.getConnection(URL, USER_NAME, PASS_WORLD);
             } catch (SQLException e) {
-                Log.log("Failed to init connection!url:"+URL+",userName:"+USER_NAME);
+                Logger.log(TAG,"Failed to init connection!url:"+URL+",userName:"+USER_NAME);
                 throw new RuntimeException(e);
             }
         }
@@ -35,7 +41,7 @@ public class SQLMapper {
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
         } catch (SQLException e) {
-            Log.log("Create statement failed:"+e.getMessage());
+            Logger.log(TAG,"Create statement failed:"+e.getMessage());
             e.printStackTrace();
         }
         return statement;
@@ -46,7 +52,7 @@ public class SQLMapper {
         try {
             resultSet = getStatement().executeQuery(sql);
         } catch (SQLException e) {
-            Log.log("Query failed,sql:"+sql);
+            Logger.log(TAG,"Query failed,sql:"+sql);
             e.printStackTrace();
         }
         return resultSet;
@@ -56,7 +62,7 @@ public class SQLMapper {
         try {
             num = getStatement().executeUpdate(sql);
         } catch (SQLException e) {
-            Log.log("Update failed,num:"+num+",sql:"+sql);
+            Logger.log(TAG,"Update failed,num:"+num+",sql:"+sql);
             e.printStackTrace();
         }
         return num;
@@ -67,13 +73,13 @@ public class SQLMapper {
         try {
             num = getStatement().executeUpdate(sql);
         } catch (SQLException throwables) {
-            Log.log("Insert failed,num:"+num+",sql:"+sql);
+            Logger.log(TAG,"Insert failed,num:"+num+",sql:"+sql);
             throwables.printStackTrace();
         }
         return num;
     }
     public static void saveResult(Patient patient){
-        Log.log("Save patient begin:"+patient);
+        Logger.log(TAG,"Save patient begin:"+patient);
         String results = "";
         for (Result result : patient.results) {
             String itemName = result.itemName;
@@ -98,10 +104,10 @@ public class SQLMapper {
                 "('" + patient.mid + "'," + patient.sid + ",'" + result.itemName + "','" + result.result + "','" + result.resDate + "','" + patient.id + "',1,'" + patient.iName + "','"+patient.barcode+"');";
             insert(sql);
         }
-        Log.log("Finished to save patient!");
+        Logger.log(TAG,"Finished to save patient!");
     }
     public static Patient getPatient(String sid,String mid,String date){
-        Log.log("Get patients by sid,date:"+date+",sid:"+sid);
+        Logger.log(TAG,"Get patients by sid,date:"+date+",sid:"+sid);
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         LocalDateTime dateTime = LocalDateTime.parse(date,dateTimeFormatter);
         LocalDate localDate = dateTime.toLocalDate();
@@ -109,7 +115,7 @@ public class SQLMapper {
         String sDate = localDate.format(dateTimeFormatter2);
         LocalDate eLocalDate = localDate.plusDays(1);
         String eDate = eLocalDate.format(dateTimeFormatter2);
-        Log.log("Success to get date,sDate:"+sDate+",eDate:"+eDate);
+        Logger.log(TAG,"Success to get date,sDate:"+sDate+",eDate:"+eDate);
 
         String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card " +
             "from patients " +
@@ -122,7 +128,7 @@ public class SQLMapper {
         Patient patient = new Patient();
         try {
             if (!query.next()){
-                Log.log("Failed to query patient message!Haven't line");
+                Logger.log(TAG,"Failed to query patient message!Haven't line");
                 return patient;
             }
 
@@ -140,9 +146,9 @@ public class SQLMapper {
             patient.iName = query.getString("pat_i_name");
             patient.phone = query.getString("pat_phonenum");
             patient.identityCard = query.getString("pat_identity_card");
-            Log.log("Get patient message:"+patient);
+            Logger.log(TAG,"Get patient message:"+patient);
         } catch (SQLException e) {
-            Log.log("Failed to get patient message by sid,sid:"+sid+",mid:"+mid+",error:"+e.getMessage());
+            Logger.log(TAG,"Failed to get patient message by sid,sid:"+sid+",mid:"+mid+",error:"+e.getMessage());
             throw new RuntimeException(e);
         }
         return patient;
@@ -160,7 +166,7 @@ public class SQLMapper {
         Patient patient = new Patient();
         try {
             if (!query.next()){
-                Log.log("Failed to query patient message!Haven't line");
+                Logger.log(TAG,"Failed to query patient message!Haven't line");
                 return patient;
             }
 
@@ -178,9 +184,9 @@ public class SQLMapper {
             patient.iName = query.getString("pat_i_name");
             patient.phone = query.getString("pat_phonenum");
             patient.identityCard = query.getString("pat_identity_card");
-            Log.log("Get patient message:"+patient);
+            Logger.log(TAG,"Get patient message:"+patient);
         } catch (SQLException e) {
-            Log.log("Failed to get patient message by barcode,barcode:"+barcode+",mid:"+mid+",error:"+e.getMessage());
+            Logger.log(TAG,"Failed to get patient message by barcode,barcode:"+barcode+",mid:"+mid+",error:"+e.getMessage());
             throw new RuntimeException(e);
         }
         return patient;
