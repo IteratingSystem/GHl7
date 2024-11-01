@@ -5,7 +5,7 @@ import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
-import com.ghl7.Log;
+import com.ghl7.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -53,7 +53,7 @@ public class BaseService extends BaseInstrument{
             service.startAndWait();
 
             System.out.println("Service started successfully!Port:"+port);
-            Log.log("Service started successfully!Port:"+port);
+            Logger.log("Service started successfully!Port:"+port);
         } catch (InterruptedException e) {
             System.out.println("Service started failed!");
             e.printStackTrace();

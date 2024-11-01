@@ -1,0 +1,11 @@
+{
+  sqlUrl:192.168.0.6,
+  userName:lis,
+  passwd:slis,
+  mid:MT8000,
+  startPort:5001,
+  targetPort:11488,
+  targetHost:127.0.0.1,
+  useSTL:false,
+  logDir:log
+}

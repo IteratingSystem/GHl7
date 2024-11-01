@@ -6,9 +6,28 @@ package com.ghl7;
  * @Description
  **/
 public class AppRule {
-    public final static String WIN_TITLE = "数据传输工具";
-    public final static int FPS = 30;
-    public final static int WIN_WIDTH = 640;
-    public final static int WIN_HEIGHT = 480;
+    public String sqlUrl;
+    public String userName;
+    public String passwd;
+    public String mid;
+    public int startPort;
+    public int targetPort;
+    public String targetHost;
+    public boolean useSTL;
+    public String logDir;
 
+
+    @Override
+    public String toString() {
+        return "AppRule{" +
+            "sqlUrl='" + sqlUrl + '\'' +
+            ", userName='" + userName + '\'' +
+            ", passwd='" + passwd + '\'' +
+            ", mid='" + mid + '\'' +
+            ", startPort='" + startPort + '\'' +
+            ", targetPort='" + targetPort + '\'' +
+            ", targetHost='" + targetHost + '\'' +
+            ", userSTL=" + useSTL +
+            '}';
+    }
 }

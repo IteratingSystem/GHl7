@@ -1,105 +1,58 @@
 package com.ghl7;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.ghl7.component.LogPanel;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
+import com.ghl7.dao.SQLMapper;
 import com.ghl7.instrument.BaseClient;
-import com.ghl7.instrument.BaseInstrument;
 import com.ghl7.receiving.BaseReceiving;
-import com.ghl7.receiving.H50PlaceItem;
-import com.ghl7.receiving.H50ReceiveResults;
+import com.ghl7.receiving.MT8000PlaceItem;
+import com.ghl7.receiving.MT8000ReceiveResults;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class MainApplication extends ApplicationAdapter {
-    private static final String SKIN_PATH = "ui/uiskin.json";
-    private BaseInstrument baseInstrument;
-
-    private Stage stage;
-    public static LogPanel LOG_PANEL;
-
-    private  BaseClient h50Client;
-
-    @Override
-    public void create() {
-        AssetManager assetManager = new AssetManager();
-        assetManager.load(SKIN_PATH, Skin.class);
-        assetManager.finishLoading();
-
-        Skin skin = assetManager.get(SKIN_PATH, Skin.class);
+public class MainApplication {
+    private final static String TAG = MainApplication.class.getSimpleName();
+    private Json json;
+    private AppRule appRule;
+    private BaseClient baseClient;
 
 
-//        LOG_PANEL = new LogPanel(skin);
-//        ScrollPane scrollPane = new ScrollPane(LOG_PANEL);
-//        scrollPane.setScrollbarsVisible(true);
-//        scrollPane.setFadeScrollBars(true);
-//        scrollPane.setScrollingDisabled(false, false);
-
-//        TextButton clear = new TextButton("clear",skin);
-//        clear.addListener(new ClickListener(){
-//            @Override
-//            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-//                super.touchUp(event, x, y, pointer, button);
-//            }
-//        });
-//        TextButton save = new TextButton("save",skin);
-
-//        Table table = new Table();
-//        table.setFillParent(true);
-//        table.setDebug(false);
-
-//        table.add(scrollPane).colspan(2);
-//        table.row();
-//        table.add(clear);
-//        table.add(save);
-
-        stage = new Stage();
-//        stage.addActor(table);
-        Gdx.input.setInputProcessor(stage);
-
-        runApp();
+    public MainApplication(){
+        initialize();
+        connectSqlServer();
+        startInstrument();
     }
 
-    private void runApp() {
+    private void initialize(){
+        json = new Json();
+        FileHandle ruleInternal = new FileHandle(Paths.APP_RULE_PATH.getPath());
+        appRule = json.fromJson(AppRule.class,ruleInternal);
+        Paths.LOG_DIR.setPath(appRule.logDir);
+
+        Logger.log(TAG,"Success to initialize;");
+    }
+
+    //这里不是真的连接数据库，而是将数据库信息传入，在要用到sql请求的时候会自动连接数据库
+    private void connectSqlServer(){
+        SQLMapper.setData(appRule.sqlUrl,appRule.userName,appRule.passwd);
+
+        Logger.log(TAG,"Success to setData for SQLMapper,url:"+appRule.sqlUrl+",userName:"+appRule.userName);
+    }
+
+    private void startInstrument(){
+        Logger.log(TAG,"Starting client,mid:"+appRule.mid+",startPort:"+appRule.startPort+",targetHost:"+appRule.targetHost+",targetProt:"+appRule.targetPort);
+
         List<BaseReceiving> receivings = new ArrayList<>();
-        receivings.add(new H50ReceiveResults("H50","ORU","R01"));
-        receivings.add(new H50PlaceItem("H50","ORM","O01"));
-//        h50Client = new BaseClient("H50",5001,false,"127.0.0.1",5100,receivings);
-        h50Client = new BaseClient("H50",5001,false,"10.0.0.9",5100,receivings);
-        h50Client.start();
-    }
+        MT8000PlaceItem mt8000PlaceItem = new MT8000PlaceItem(appRule.mid,"ORM","O01");
+        MT8000ReceiveResults mt8000ReceiveResults = new MT8000ReceiveResults(appRule.mid,"ORU","R01");
+        receivings.add(mt8000PlaceItem);
+        receivings.add(mt8000ReceiveResults);
+        baseClient = new BaseClient(appRule.mid, appRule.startPort, appRule.useSTL,appRule.targetHost,appRule.targetPort,receivings);
+        baseClient.start();
 
-    @Override
-    public void resize(int width, int height) {
-    }
-
-    @Override
-    public void render() {
-        ScreenUtils.clear(0.5f, 0.5f, 0.5f, 1);
-        stage.act();
-        stage.draw();
-
-    }
-
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
-
-    @Override
-    public void dispose() {
-        h50Client.dispose();
+        Logger.log(TAG,"Success to start client,mid:"+appRule.mid+",startPort:"+appRule.startPort+",targetHost:"+appRule.targetHost+",targetProt:"+appRule.targetPort);
     }
 }
