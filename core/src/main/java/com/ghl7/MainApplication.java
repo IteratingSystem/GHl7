@@ -9,6 +9,7 @@ import com.ghl7.receiving.MT8000PlaceItem;
 import com.ghl7.receiving.MT8000ReceiveResults;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -17,10 +18,12 @@ public class MainApplication {
     private final static String TAG = MainApplication.class.getSimpleName();
     private Json json;
     private AppRule appRule;
+    private Channel channel;
     private BaseClient baseClient;
 
 
     public MainApplication(){
+
         initialize();
         connectSqlServer();
         startInstrument();
@@ -29,7 +32,9 @@ public class MainApplication {
     private void initialize(){
         json = new Json();
         FileHandle ruleInternal = new FileHandle(Paths.APP_RULE_PATH.getPath());
+        FileHandle channelInternal = new FileHandle(Paths.CHANNEL_PATH.getPath());
         appRule = json.fromJson(AppRule.class,ruleInternal);
+        channel = json.fromJson(Channel.class,channelInternal);
         Paths.LOG_DIR.setPath(appRule.logDir);
 
         Logger.log(TAG,"Success to initialize;");
@@ -47,7 +52,7 @@ public class MainApplication {
 
         List<BaseReceiving> receivings = new ArrayList<>();
         MT8000PlaceItem mt8000PlaceItem = new MT8000PlaceItem(appRule.mid,"ORM","O01");
-        MT8000ReceiveResults mt8000ReceiveResults = new MT8000ReceiveResults(appRule.mid,"ORU","R01");
+        MT8000ReceiveResults mt8000ReceiveResults = new MT8000ReceiveResults(appRule.mid,"ORU","R01",channel);
         receivings.add(mt8000PlaceItem);
         receivings.add(mt8000ReceiveResults);
         baseClient = new BaseClient(appRule.mid, appRule.startPort, appRule.useSTL,appRule.targetHost,appRule.targetPort,receivings);

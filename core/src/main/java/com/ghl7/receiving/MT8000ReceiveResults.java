@@ -4,6 +4,7 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v231.message.ORU_R01;
 import ca.uhn.hl7v2.protocol.ReceivingApplicationException;
+import com.ghl7.Channel;
 import com.ghl7.Logger;
 import com.ghl7.dao.SQLMapper;
 import com.ghl7.message.MessageHelper;
@@ -22,9 +23,11 @@ import java.util.Map;
  * @Description
  **/
 public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
+    private Channel channel;
 
-    public MT8000ReceiveResults(String mid, String type, String event) {
+    public MT8000ReceiveResults(String mid, String type, String event, Channel channel) {
         super(mid, type, event);
+        this.channel = channel;
     }
 
     @Override
@@ -59,23 +62,28 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
             List<String[]> obxs = MessageHelper.getSegment(message, "OBX");
             List<Result> results = new ArrayList<>();
             String resDate = "";
+            Map<String, String> midToLis = channel.midToLis;
             for (String[] obx : obxs) {
                 //结果类型
-                String valueType = obx[2];
-                if (!"NM".equals(valueType)){
-                    continue;
-                }
+//                String valueType = obx[2];
+//                if (!"NM".equals(valueType)){
+//                    continue;
+//                }
                 //获取项目及结果
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
                 resDate = MessageHelper.getData(message,"/.OBR-7");
 
-                if (!"HbA1c%".equals(itemName)) {
-                    continue;
-                }
+//                if (!"HbA1c%".equals(itemName)) {
+//                    continue;
+//                }
                 Result result = new Result();
                 result.itemName = itemName;
                 result.result = resultValue;
+                //通道号
+                if (!result.result.isEmpty() && midToLis.containsKey(result.result)) {
+                    result.result = midToLis.get(result.result);
+                }
                 result.resDate = MessageHelper.strToFormatStr(resDate);
                 Logger.log(getTag(),"Get item result:name:"+itemName+";result:"+resultValue);
                 results.add(result);

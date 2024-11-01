@@ -1,7 +1,9 @@
 package com.ghl7;
 
 public enum Paths {
+
     LOG_DIR("log"),
+    CHANNEL_PATH("channel.json"),
     APP_RULE_PATH("appRule.json");
     private String path;
     Paths(String path){

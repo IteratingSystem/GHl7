@@ -16,7 +16,6 @@ public class AppRule {
     public boolean useSTL;
     public String logDir;
 
-
     @Override
     public String toString() {
         return "AppRule{" +

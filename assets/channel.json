@@ -1,0 +1,12 @@
+{
+  lisToMid:{
+    class:java.util.HashMap,
+    12:12,
+    13:13
+  },
+  midToLis:{
+    class:java.util.HashMap,
+    22:22,
+    23:23
+  }
+}
