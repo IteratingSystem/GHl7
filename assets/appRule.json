@@ -1,5 +1,5 @@
 {
-  sqlUrl:192.168.0.6,
+  sqlUrl:192.168.201.14,
   userName:lis,
   passwd:slis,
   mid:MT8000,
