@@ -1,0 +1,10 @@
+appRule.json
+channel.json
+id_file
+log/20241102.txt
+log/20241103.txt
+run.bat
+tools/id_file
+tools/ORM^O01_MT8000.hl7
+tools/ORU^R01_MT8000.hl7
+tools/testpanel.exe
