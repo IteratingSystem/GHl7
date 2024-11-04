@@ -48,8 +48,7 @@ public class MainApplication {
     }
 
     private void startInstrument(){
-        Logger.log(TAG,"Starting client,mid:"+appRule.mid+",startPort:"+appRule.startPort+",targetHost:"+appRule.targetHost+",targetProt:"+appRule.targetPort);
-
+        Logger.log(TAG,"Starting instrument...");
         List<BaseReceiving> receivings = new ArrayList<>();
         MT8000PlaceItem mt8000PlaceItem = new MT8000PlaceItem(appRule.mid,"ORM","O01",channel);
         MT8000ReceiveResults mt8000ReceiveResults = new MT8000ReceiveResults(appRule.mid,"ORU","R01",channel);

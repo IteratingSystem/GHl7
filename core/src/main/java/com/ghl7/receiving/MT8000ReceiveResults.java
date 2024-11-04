@@ -74,8 +74,7 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
                 Logger.log(getTag(),"Getting resDateStr;");
-                resDate = MessageHelper.getData(message,"/.OBR-7");
-                Logger.log(getTag(),"Success to get resDateStr:"+resDate);
+                resDate = MessageHelper.getData(message,"/.OBR-6");
 
                 Result result = new Result();
                 result.itemName = itemName;

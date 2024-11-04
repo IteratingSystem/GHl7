@@ -89,6 +89,10 @@ public class MessageHelper {
     }
 
     public static String strToFormatStr(String str){
+        if (str.isEmpty()){
+            Logger.log(TAG,"Error:Date is empty:"+str);
+            return "";
+        }
         try {
             Date date = new SimpleDateFormat("yyyyMMddHHmmss").parse(str);
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
