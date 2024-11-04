@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.ghl7.dao.SQLMapper;
 import com.ghl7.instrument.BaseClient;
+import com.ghl7.instrument.BaseService;
 import com.ghl7.receiving.BaseReceiving;
 import com.ghl7.receiving.MT8000PlaceItem;
 import com.ghl7.receiving.MT8000ReceiveResults;
@@ -19,7 +20,6 @@ public class MainApplication {
     private Json json;
     private AppRule appRule;
     private Channel channel;
-    private BaseClient baseClient;
 
 
     public MainApplication(){
@@ -51,13 +51,14 @@ public class MainApplication {
         Logger.log(TAG,"Starting client,mid:"+appRule.mid+",startPort:"+appRule.startPort+",targetHost:"+appRule.targetHost+",targetProt:"+appRule.targetPort);
 
         List<BaseReceiving> receivings = new ArrayList<>();
-        MT8000PlaceItem mt8000PlaceItem = new MT8000PlaceItem(appRule.mid,"ORM","O01");
+        MT8000PlaceItem mt8000PlaceItem = new MT8000PlaceItem(appRule.mid,"ORM","O01",channel);
         MT8000ReceiveResults mt8000ReceiveResults = new MT8000ReceiveResults(appRule.mid,"ORU","R01",channel);
         receivings.add(mt8000PlaceItem);
         receivings.add(mt8000ReceiveResults);
-        baseClient = new BaseClient(appRule.mid, appRule.startPort, appRule.useSTL,appRule.targetHost,appRule.targetPort,receivings);
-        baseClient.start();
+//        BaseClient baseClient = new BaseClient(appRule.mid, appRule.startPort, appRule.useSTL,appRule.targetHost,appRule.targetPort,receivings);
+//        baseClient.start();
 
-        Logger.log(TAG,"Success to start client,mid:"+appRule.mid+",startPort:"+appRule.startPort+",targetHost:"+appRule.targetHost+",targetProt:"+appRule.targetPort);
+        BaseService baseService = new BaseService(appRule.mid,appRule.startPort,appRule.useSTL,receivings);
+        baseService.start();
     }
 }

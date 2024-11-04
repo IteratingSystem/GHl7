@@ -6,8 +6,11 @@ import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import com.ghl7.Logger;
+import com.ghl7.receiving.BaseReceiving;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -18,14 +21,13 @@ import java.util.concurrent.TimeUnit;
  * @Description
  **/
 public class BaseService extends BaseInstrument{
+    private final static String TAG = BaseService.class.getSimpleName();
     public HapiContext context;
     public HL7Service service;
-    private ReceivingApplication receivingApplication;
-    public BaseService(String mid, int port, boolean useSSL,ReceivingApplication receivingApplication) {
+    private List<BaseReceiving> receivings;
+    public BaseService(String mid, int port, boolean useSSL,List<BaseReceiving> receivings) {
         super(mid, port, useSSL);
-        if (receivingApplication != null){
-            this.receivingApplication = receivingApplication;
-        }
+        this.receivings = receivings;
     }
 
     @Override
@@ -47,14 +49,15 @@ public class BaseService extends BaseInstrument{
             context.setLowerLayerProtocol(mllp);
 
             service = context.newServer(port,useSTL);
-            if (receivingApplication != null){
-                service.registerApplication(receivingApplication);
+            for (BaseReceiving receiving : receivings) {
+                service.registerApplication(receiving.type,receiving.event,receiving);
             }
             service.startAndWait();
 
-            System.out.println("Service started successfully!Port:"+port);
-            Logger.log("Service started successfully!Port:"+port);
+
+            Logger.log(TAG,"Success to start service,mid:"+mid+",startPort:"+port);
         } catch (InterruptedException e) {
+            Logger.log(TAG,"Failed to start service,mid:"+mid+",startPort:"+port);
             System.out.println("Service started failed!");
             e.printStackTrace();
         }

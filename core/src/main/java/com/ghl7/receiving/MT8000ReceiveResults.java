@@ -48,10 +48,9 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
                 return response;
             }else if (originalId.length() <= 6) {
                 Logger.log(getTag(),"OriginalId length <= 6,Is sid:"+originalId);
-//                sid = originalId;
-                sid = MessageHelper.getData(message,"/.PID-3");
+                sid = originalId;
                 if (StringUtils.isEmpty(sid)){
-                    sid = originalId;
+                    Logger.log(getTag(),"Error to get sid:sid is empty!");
                 }
             }else {
                 Logger.log(getTag(),"OriginalId length > 6,Is barcode:"+originalId);
@@ -59,6 +58,7 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
             }
 
 
+            Logger.log(getTag(),"Getting OBX!");
             List<String[]> obxs = MessageHelper.getSegment(message, "OBX");
             List<Result> results = new ArrayList<>();
             String resDate = "";

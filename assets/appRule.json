@@ -4,8 +4,8 @@
   passwd:slis,
   mid:MT8000,
   startPort:5001,
-  targetPort:11488,
+  targetPort:7118,
   targetHost:127.0.0.1,
   useSTL:false,
-  logDir:log
+  logDir:"log"
 }

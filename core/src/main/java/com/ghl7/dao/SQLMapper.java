@@ -1,6 +1,7 @@
 package com.ghl7.dao;
 
 import com.ghl7.Logger;
+import com.ghl7.pojo.Item;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 
@@ -8,6 +9,8 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Auther WenLong
@@ -153,6 +156,34 @@ public class SQLMapper {
         }
         return patient;
     }
+    public static List<Item> getItems(String barcode){
+        List<Item> items = new ArrayList<>();
+
+        String sql = "select itm_dtype,itm_ecd,itm_name \n" +
+            "from patients\n" +
+            "inner join lis_test_items on test_id = pat_id\n" +
+            "inner join lis_order_item_vs_item  on lis_order_item_vs_item.order_item_code = lis_test_items.order_item_code\n" +
+            "inner join item on itm_ecd = report_item_code \n" +
+            "where 1=1\n" +
+            "and pat_bar_code = '"+barcode+"'\n" +
+            "group by itm_dtype,itm_ecd,itm_name";
+
+        ResultSet query = query(sql);
+        try {
+            while (query.next()){
+                Item item = new Item();
+                item.resultType = query.getString("itm_dtype");
+                item.itemName = query.getString("itm_name");
+                item.itemCode = query.getString("itm_ecd");
+                items.add(item);
+            }
+        } catch (SQLException e) {
+            Logger.log(TAG,"Failed to get items,barcode:"+barcode);
+            throw new RuntimeException(e);
+        }
+
+        return items;
+    }
     public static Patient getPatient(String barcode,String mid){
         String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card \n" +
             "from patients \n" +
@@ -187,6 +218,43 @@ public class SQLMapper {
             Logger.log(TAG,"Get patient message:"+patient);
         } catch (SQLException e) {
             Logger.log(TAG,"Failed to get patient message by barcode,barcode:"+barcode+",mid:"+mid+",error:"+e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return patient;
+    }
+    public static Patient getPatient(String barcode){
+        String sql = "select pat_i_name,pat_id,pat_bar_code,pat_sid,pat_name,pat_d_name,pat_s_name,pat_sex,pat_performed_status,pat_age,pat_mid,pat_doct,pat_phonenum,pat_identity_card \n" +
+            "from patients \n" +
+            "where 1=1 \n" +
+            "and pat_bar_code = '"+barcode+"' \n" +
+            "order by pat_date desc;";
+
+        ResultSet query = query(sql);
+
+        Patient patient = new Patient();
+        try {
+            if (!query.next()){
+                Logger.log(TAG,"Failed to query patient message!Haven't line");
+                return patient;
+            }
+
+            patient.id = query.getString("pat_id");
+            patient.sid = query.getString("pat_sid");
+            patient.barcode = query.getString("pat_bar_code");
+            patient.name = query.getString("pat_name");
+            patient.age = query.getString("pat_age");
+            patient.sex = query.getString("pat_sex");
+            patient.sName = query.getString("pat_s_name");
+            patient.dct = query.getString("pat_doct");
+            patient.depart = query.getString("pat_d_name");
+            patient.status = query.getString("pat_performed_status");
+            patient.mid = query.getString("pat_mid");
+            patient.iName = query.getString("pat_i_name");
+            patient.phone = query.getString("pat_phonenum");
+            patient.identityCard = query.getString("pat_identity_card");
+            Logger.log(TAG,"Get patient message:\n"+patient);
+        } catch (SQLException e) {
+            Logger.log(TAG,"Failed to get patient message by barcode,barcode:"+barcode+",error:"+e.getMessage());
             throw new RuntimeException(e);
         }
         return patient;

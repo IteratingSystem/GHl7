@@ -163,7 +163,7 @@ public class StructureFactory {
             obr.getUniversalServiceID().getCe3_NameOfCodingSystem().setValue("99MRC");
             obr.getRequestedDateTime().getTimeOfAnEvent().setValue(formattedDate);
 //            obr.getObservationDateTime().getTimeOfAnEvent().setValue(formattedDate);
-            obr.insertCollectorIdentifier(0).getXcn1_IDNumber().setValue("张连峰");
+            obr.insertCollectorIdentifier(0).getXcn1_IDNumber().setValue("".equals(patient.name)?"无名":patient.name);
 //            obr.getPrincipalResultInterpreter().getOPName().getGivenName().setValue("admin");
             obr.getSpecimenReceivedDateTime().getTimeOfAnEvent().setValue(formattedDate);
             obr.getDiagnosticServSectID().setValue("HM");

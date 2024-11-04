@@ -17,7 +17,7 @@ public class MessageMT8000 {
         PV1 pv1 = StructureMT8000.getPV1(transmit);
         ORC orc = StructureMT8000.getORC(transmit);
         OBR obr = StructureFactory.getOBR(transmit);
-        int obxLength = StructureFactory.createOBX(transmit);
+        int obxLength = StructureMT8000.createOBX(transmit);
         return orrO02;
     }
 }
