@@ -11,7 +11,6 @@ import com.ghl7.message.MessageHelper;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 import com.microsoft.sqlserver.jdbc.StringUtils;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
