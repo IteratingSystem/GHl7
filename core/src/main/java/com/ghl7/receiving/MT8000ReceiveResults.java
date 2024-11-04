@@ -11,6 +11,7 @@ import com.ghl7.message.MessageHelper;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Result;
 import com.microsoft.sqlserver.jdbc.StringUtils;
+import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,11 +73,10 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
                 //获取项目及结果
                 String itemName = obx[3].split("\\^")[1];
                 String resultValue = obx[5];
+                Logger.log(getTag(),"Getting resDateStr;");
                 resDate = MessageHelper.getData(message,"/.OBR-7");
+                Logger.log(getTag(),"Success to get resDateStr:"+resDate);
 
-//                if (!"HbA1c%".equals(itemName)) {
-//                    continue;
-//                }
                 Result result = new Result();
                 result.itemName = itemName;
                 result.result = resultValue;

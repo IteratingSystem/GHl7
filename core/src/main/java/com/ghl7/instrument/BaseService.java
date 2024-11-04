@@ -7,7 +7,6 @@ import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.protocol.ReceivingApplication;
 import com.ghl7.Logger;
 import com.ghl7.receiving.BaseReceiving;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.util.List;

@@ -18,6 +18,7 @@ import java.util.List;
  * @Description
  **/
 public class MessageHelper {
+    private final static String TAG = MessageHelper.class.getSimpleName();
     private static PipeParser PARSER = new PipeParser();
 
     public static String getString(Message message){
@@ -45,7 +46,7 @@ public class MessageHelper {
         try {
             messageStr = PARSER.encode(message);
         } catch (HL7Exception e) {
-            Logger.log("Failed to getSegment in MessageHelper,Segment:"+segment);
+            Logger.log(TAG,"Failed to getSegment in MessageHelper,Segment:"+segment);
             throw new RuntimeException(e);
         }
 
@@ -92,6 +93,7 @@ public class MessageHelper {
             Date date = new SimpleDateFormat("yyyyMMddHHmmss").parse(str);
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
         } catch (ParseException e) {
+            Logger.log(TAG,"Failed to format str:"+str);
             e.printStackTrace();
         }
         return "";
