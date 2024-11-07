@@ -8,6 +8,7 @@ import com.ghl7.instrument.BaseService;
 import com.ghl7.receiving.BaseReceiving;
 import com.ghl7.receiving.MT8000PlaceItem;
 import com.ghl7.receiving.MT8000ReceiveResults;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,6 +40,9 @@ public class MainApplication {
 
         Logger.log(TAG,"Success to initialize;");
         Logger.log(TAG,"Channel size:midToLis:"+channel.midToLis.size());
+        for (String key : channel.midToLis.keySet()) {
+            Logger.log(TAG,key+":"+channel.midToLis.get(key));
+        }
     }
 
     //这里不是真的连接数据库，而是将数据库信息传入，在要用到sql请求的时候会自动连接数据库
