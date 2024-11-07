@@ -83,8 +83,8 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
                 result.itemName = itemName;
                 result.result = resultValue;
                 //通道号
-                if (!result.result.isEmpty() && midToLis.containsKey(result.result)) {
-                    result.result = midToLis.get(result.result);
+                if (!result.itemName.isEmpty() && midToLis.containsKey(result.itemName)) {
+                    result.itemName = midToLis.get(result.itemName);
                 }
                 result.resDate = MessageHelper.strToFormatStr(resDate);
                 Logger.log(getTag(),"Get item result:name:"+itemName+";result:"+resultValue);
@@ -102,6 +102,7 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
                 if ("7".equals(patient.status)){
                     patient.sid = "999" + patient.sid;
                 }
+                patient.results = results;
                 SQLMapper.saveResult(patient);
             }else{
                 //以条码号接收结果

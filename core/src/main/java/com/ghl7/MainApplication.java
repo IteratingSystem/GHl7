@@ -3,12 +3,10 @@ package com.ghl7;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Json;
 import com.ghl7.dao.SQLMapper;
-import com.ghl7.instrument.BaseClient;
 import com.ghl7.instrument.BaseService;
 import com.ghl7.receiving.BaseReceiving;
 import com.ghl7.receiving.MT8000PlaceItem;
 import com.ghl7.receiving.MT8000ReceiveResults;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
