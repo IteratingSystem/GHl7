@@ -39,6 +39,10 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
             response = message.generateACK();
             //读取id
             String originalId = MessageHelper.getData(message,"/.OBR-3");
+            if (!StringUtils.isNumeric(originalId)) {
+                Logger.log(getTag(),"Error to get originalId:originalId not is numeric!");
+                return response;
+            }
 
             //获取为条码或样本号
             String sid = "";

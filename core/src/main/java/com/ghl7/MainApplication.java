@@ -38,6 +38,7 @@ public class MainApplication {
         Paths.LOG_DIR.setPath(appRule.logDir);
 
         Logger.log(TAG,"Success to initialize;");
+        Logger.log(TAG,"Channel size:midToLis:"+channel.midToLis.size());
     }
 
     //这里不是真的连接数据库，而是将数据库信息传入，在要用到sql请求的时候会自动连接数据库

@@ -169,6 +169,7 @@ public class SQLMapper {
             "group by itm_dtype,itm_ecd,itm_name";
 
         ResultSet query = query(sql);
+        Logger.log(TAG,"Get items in lis:");
         try {
             while (query.next()){
                 Item item = new Item();
@@ -176,6 +177,7 @@ public class SQLMapper {
                 item.itemName = query.getString("itm_name");
                 item.itemCode = query.getString("itm_ecd");
                 items.add(item);
+                Logger.log(TAG,item.itemName+"("+item.itemCode+")");
             }
         } catch (SQLException e) {
             Logger.log(TAG,"Failed to get items,barcode:"+barcode);
