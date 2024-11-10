@@ -159,14 +159,14 @@ public class SQLMapper {
     public static List<Item> getItems(String barcode){
         List<Item> items = new ArrayList<>();
 
-        String sql = "select itm_dtype,itm_ecd,itm_name \n" +
+        String sql = "select itm_dtype, RTRIM(itm_ecd) as itemCode, itm_name \n" +
             "from patients\n" +
             "inner join lis_test_items on test_id = pat_id\n" +
-            "inner join lis_order_item_vs_item  on lis_order_item_vs_item.order_item_code = lis_test_items.order_item_code\n" +
-            "inner join item on itm_ecd = report_item_code \n" +
+            "inner join lis_order_item_vs_item on lis_order_item_vs_item.order_item_code = lis_test_items.order_item_code\n" +
+            "inner join item on RTRIM(itm_ecd) = report_item_code \n" +
             "where 1=1\n" +
-            "and pat_bar_code = '"+barcode+"'\n" +
-            "group by itm_dtype,itm_ecd,itm_name";
+            "and pat_bar_code = '" + barcode + "'\n" +
+            "group by itm_dtype, RTRIM(itm_ecd), itm_name";
 
         ResultSet query = query(sql);
         Logger.log(TAG,"Get items in lis:");
@@ -175,7 +175,7 @@ public class SQLMapper {
                 Item item = new Item();
                 item.resultType = query.getString("itm_dtype");
                 item.itemName = query.getString("itm_name");
-                item.itemCode = query.getString("itm_ecd");
+                item.itemCode = query.getString("itemCode");
                 items.add(item);
             }
         } catch (SQLException e) {

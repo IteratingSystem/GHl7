@@ -9,6 +9,7 @@ import com.ghl7.Logger;
 import com.ghl7.pojo.Patient;
 import com.ghl7.pojo.Transmit;
 import com.ghl7.segment.CORR_O02;
+import com.microsoft.sqlserver.jdbc.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -96,10 +97,16 @@ public class StructureFactory {
             pid = (PID)message.get("PID");
             pid.getPid1_SetIDPID().setValue("1");
             pid.insertPatientIdentifierList(0).getIdentifierTypeCode().setValue("MR");
-            pid.getPatientIdentifierList(0).getID().setValue("CharNo");
+            pid.getPatientIdentifierList(0).getID().setValue(StringUtils.isEmpty(patient.sid)?"CharNo":patient.sid);
             pid.getDateTimeOfBirth().getTimeOfAnEvent().setValue("19810506");
-            pid.insertPatientName(0).getXpn2_GivenName().setValue("FName");
-            pid.getSex().setValue("Female");
+            pid.insertPatientName(0).getXpn2_GivenName().setValue(StringUtils.isEmpty(patient.name)?"FName":patient.name);
+            String sex = "Female";
+            if (!StringUtils.isEmpty(patient.sex)){
+                if("男".equals(patient.sex.trim())){
+                    sex = "Male";
+                }
+            }
+            pid.getSex().setValue(sex);
         } catch (HL7Exception e) {
             Logger.log(TAG,"Failed to get PID:Not has PID in the message;");
             throw new RuntimeException(e);

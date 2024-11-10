@@ -50,6 +50,9 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
             if (StringUtils.isEmpty(originalId)){
                 Logger.log(getTag(),"Error:originalId is empty!");
                 return response;
+            }else if (StringUtils.isNumeric(originalId)){
+                Logger.log(getTag(),"Error to get originalId:originalId not is numeric!");
+                return response;
             }else if (originalId.length() <= 6) {
                 Logger.log(getTag(),"OriginalId length <= 6,Is sid:"+originalId);
                 sid = originalId;
@@ -74,7 +77,12 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
 //                    continue;
 //                }
                 //获取项目及结果
-                String itemName = obx[3].split("\\^")[1];
+                String[] split = obx[3].split("\\^");
+                if (split.length < 4){
+                    continue;
+                }
+                String itemName = obx[3].split("\\^")[3];
+                System.out.println(itemName);
                 String resultValue = obx[5];
                 Logger.log(getTag(),"Getting resDateStr;");
                 resDate = MessageHelper.getData(message,"/.OBR-6");
