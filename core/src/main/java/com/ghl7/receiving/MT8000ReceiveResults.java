@@ -50,8 +50,8 @@ public class MT8000ReceiveResults extends BaseReceiving<ORU_R01> {
             if (StringUtils.isEmpty(originalId)){
                 Logger.log(getTag(),"Error:originalId is empty!");
                 return response;
-            }else if (StringUtils.isNumeric(originalId)){
-                Logger.log(getTag(),"Error to get originalId:originalId not is numeric!");
+            }else if (!StringUtils.isNumeric(originalId)){
+                Logger.log(getTag(),"Error to get originalId:originalId not is numeric:"+originalId);
                 return response;
             }else if (originalId.length() <= 6) {
                 Logger.log(getTag(),"OriginalId length <= 6,Is sid:"+originalId);

@@ -1,9 +1,6 @@
 appRule.json
 channel.json
 id_file
-log/20241101.txt
-log/20241102.txt
-log/20241108.txt
 run.bat
 tools/id_file
 tools/ORM^O01_MT8000.hl7
